@@ -1,0 +1,81 @@
+:root {
+    --custom-red: #ea1212;
+    --custom-red-hover: #d10f0f;
+    --custom-red-light: rgba(234, 18, 18, 0.1);
+}
+
+/* Personalización del color rojo */
+.bg-custom-red {
+    background-color: var(--custom-red) !important;
+}
+
+.btn-custom-red {
+    background-color: var(--custom-red);
+    border-color: var(--custom-red);
+    color: white;
+}
+
+.btn-custom-red:hover {
+    background-color: var(--custom-red-hover);
+    border-color: var(--custom-red-hover);
+    color: white;
+}
+
+.btn-outline-custom-red {
+    border-color: var(--custom-red);
+    color: var(--custom-red);
+}
+
+.btn-outline-custom-red:hover {
+    background-color: var(--custom-red);
+    color: white;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    transition: all 0.3s;
+    height: calc(100vh - 56px);
+    position: sticky;
+    top: 56px;
+    z-index: 1000;
+    background-color: #f8f9fa;
+}
+
+.sidebar .nav-link.active {
+    background-color: var(--custom-red) !important;
+    color: white !important;
+}
+
+.sidebar .nav-link:hover:not(.active) {
+    background-color: var(--custom-red-light) !important;
+}
+
+/* Header */
+.main-header {
+    background-color: #7e1212  !important;
+}
+
+/* Footer */
+.main-footer {
+    background-color: #343a40;
+}
+
+/* Formularios */
+.bg-custom-red .form-control {
+    border-color: #fff;
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.bg-custom-red .form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(234, 18, 18, 0.25);
+}
+
+/* Controles del sidebar */
+.sidebar-toggle {
+    color: var(--custom-red);
+}
+
+.sidebar-toggle:hover {
+    color: var(--custom-red-hover);
+}

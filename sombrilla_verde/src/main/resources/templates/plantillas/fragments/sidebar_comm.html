@@ -1,0 +1,62 @@
+<aside th:fragment="main-sidebar" class="bg-light border-end sidebar-fixed" style="width: 250px;"
+       xmlns:sec="http://www.w3.org/1999/xhtml">
+    <div class="p-3">
+        <!-- Menú de navegación -->
+        <ul class="nav nav-pills flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" th:href="@{/inicio}" sec:authorize="isAuthenticated()">
+                    <i class="bi bi-house-door"></i> Inicio
+                </a>
+            </li>
+
+            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR', 'FINANZAS' )">
+                <a class="nav-link" th:href="@{/productos}">
+                    <i class="bi bi-box-seam me-2"></i> Productos
+                </a>
+            </li>
+
+            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR')">
+                <a class="nav-link" th:href="@{/admin/categorias}">
+                    <i class="bi bi-box-seam me-2"></i> Categorias
+                </a>
+            </li>
+
+            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR', 'FINANZAS' )">
+                <a class="nav-link" th:href="@{/ventas}">
+                    <i class="bi bi-cash-coin me-2"></i> Ventas
+                </a>
+            </li>
+
+            <li class="nav-item" sec:authorize="hasAnyAuthority('VENDEDOR')">
+                <a class="nav-link" th:href="@{/cajere/alta-cliente}">
+                    <i class="bi bi-people me-2"></i> Nuevo Cliente
+                </a>
+            </li>
+
+            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR')">
+                <a class="nav-link" th:href="@{/admin/usuarios/}">
+                    <i class="bi bi-people me-2"></i> Usuarios
+                </a>
+            </li>
+
+            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR', 'FINANZAS')">
+                <a class="nav-link" th:href="@{/pedidos}">
+                    <i class="bi bi-people me-2"></i> Pedidos
+                </a>
+            </li>
+
+            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR')">
+                <a class="nav-link" th:href="@{/admin/proveedores/}">
+                    <i class="bi bi-truck me-2"></i> Proveedores
+                </a>
+            </li>
+
+            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR')">
+                <a class="nav-link" th:href="@{/admin/movimientos/}">
+                    <i class="bi bi-people me-2"></i> Movimientos
+                </a>
+            </li>
+        </ul>
+
+    </div>
+</aside>
