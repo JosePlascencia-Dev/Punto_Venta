@@ -1,7 +1,5 @@
 package punto_venta.sombrilla_verde.config;
 
-import mx.aragon.unam.model.entity.usuario.TipoUsuario;
-import mx.aragon.unam.service.usuario.UsuarioDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -21,7 +19,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-
+/*
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
@@ -121,4 +119,4 @@ public class SecurityConfig {
                 .map(tipo -> new SimpleGrantedAuthority(tipo.name()))
                 .collect(Collectors.toList());
     }
-}
+}*/

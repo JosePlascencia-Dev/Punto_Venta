@@ -8,7 +8,7 @@ CREATE TABLE usuarios (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     contrasena_hash VARCHAR(255) NOT NULL,
     tipo ENUM('ADMINISTRADOR' , 'VENDEDOR') NOT NULL DEFAULT 'VENDEDOR',
-    nombre_usuario VARCHAR(100) NOT NULL,
+    nombre_usuario VARCHAR(100) NOT NULL UNIQUE,
     fecha_registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     activo BOOLEAN NOT NULL DEFAULT TRUE,
     INDEX (tipo, activo),
@@ -18,10 +18,10 @@ CREATE TABLE usuarios (
 -- 2. Tabla de provedores
 CREATE TABLE proveedores (
     id_proveedor INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_empresa VARCHAR(100) NOT NULL,
+    nombre_empresa VARCHAR(100) NOT NULL UNIQUE,
     contacto_principal VARCHAR(100),
-    telefono VARCHAR(15),
-    email VARCHAR(100),
+    telefono VARCHAR(15) UNIQUE,
+    email VARCHAR(100) UNIQUE,
     activo BOOLEAN NOT NULL DEFAULT TRUE,
     fecha_registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX (nombre_empresa)
@@ -38,8 +38,8 @@ CREATE TABLE categorias (
 -- 4. Tabla de productos
 CREATE TABLE productos (
     id_producto INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    codigo VARCHAR(32) NOT NULL,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    codigo VARCHAR(32) NOT NULL UNIQUE,
     id_categoria INT,
     id_proveedor INT,
     precio_compra DECIMAL(12,2) UNSIGNED NOT NULL,
