@@ -9,4 +9,5 @@ public interface ProductoService {
     List<ProductoEntity> findAll();
     void deleteById(Integer id);
     ProductoEntity findById(Integer id);
+    List<ProductoEntity> findAllOrderByExistenciaAsc();
 }

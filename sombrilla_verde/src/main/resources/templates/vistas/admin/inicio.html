@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantillas/plantilla_principal}">
+<head>
+    <title>Inicio</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="container-fluid">
+        <h1 class="text-success mb-4"><i class="bi bi-speedometer2"></i> Panel de Control</h1>
+
+        <!-- Tarjetas de resumen -->
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card border-success">
+                    <div class="card-body">
+                        <h5 class="card-title">Ventas Hoy</h5>
+                        <p class="display-6 text-success" th:if="${ventasHoy != null}" th:text="${ventasHoy}"></p>
+                        <p class="display-6 text-success" th:if="${ventasHoy == null}">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card border-success">
+                    <div class="card-body">
+                        <h5 class="card-title">Total de ventas</h5>
+                        <p class="display-6 text-success" th:if="${totalHoy != null}" th:text="'$' + ${totalHoy}"></p>
+                        <p class="display-6 text-success" th:if="${totalHoy == null}">$0.00</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card border-success">
+                    <div class="card-body">
+                        <h5 class="card-title">Ganancias</h5>
+                        <p class="display-6 text-success" th:if="${gananciasHoy != null}" th:text="'$' + ${gananciasHoy}"></p>
+                        <p class="display-6 text-success" th:if="${gananciasHoy == null}">$0.00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card shadow-sm border-success mt-4">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-box-seam me-2"></i> Productos por nivel de stock
+                </h5>
+                <small class="fw-light">Ordenado de menor a mayor</small>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th width="50px">ID</th>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th>Proveedor</th>
+                            <th class="text-end">Precio Venta</th>
+                            <th class="text-end">Stock</th>
+                            <th class="text-center">Unidad</th>
+                            <th class="text-center">Estado</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="producto : ${productosOrdenadosPorStock}">
+                            <td th:text="${producto.id}">1</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img th:src="${producto.getImagenPath()}"
+                                         width="40" height="40"
+                                         class="rounded-circle me-2 border"
+                                         onerror="this.src='/images/default-product.png'">
+                                    <span th:text="${producto.nombre}">Nombre</span>
+                                </div>
+                            </td>
+                            <td th:text="${producto.categoria?.nombre}">Categoría</td>
+                            <td th:text="${producto.proveedor?.nombreEmpresa}">Proveedor</td>
+                            <td class="text-end" th:text="'$' + ${#numbers.formatDecimal(producto.precioVenta, 1, 2, 'COMMA')}">0.00</td>
+                            <td class="text-end">
+                                    <span th:class="${producto.existencia.compareTo(T(java.math.BigDecimal).valueOf(10)) < 0} ? 'text-danger fw-bold' : ''"
+                                          th:text="${#numbers.formatDecimal(producto.existencia, 1, 2, 'COMMA')}">0</span>
+                            </td>
+                            <td class="text-center" th:text="${producto.unidadMedida}">KG</td>
+                            <td class="text-center">
+                                <span th:if="${producto.activo}" class="badge bg-success">Activo</span>
+                                <span th:unless="${producto.activo}" class="badge bg-secondary">Inactivo</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-white py-2">
+                <small class="text-muted">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Productos en <span class="text-danger fw-bold">rojo</span> tienen stock menor a 10 unidades.
+                </small>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

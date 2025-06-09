@@ -9,8 +9,9 @@
                 </a>
             </li>
 
-            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR', 'FINANZAS' )">
-                <a class="nav-link" th:href="@{/productos}">
+            <!--##########################        OPCIONES PARA ADMINISTRADOR       #################################-->
+            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR' )">
+                <a class="nav-link" th:href="@{/admin/productos}">
                     <i class="bi bi-box-seam me-2"></i> Productos
                 </a>
             </li>
@@ -21,21 +22,21 @@
                 </a>
             </li>
 
-            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR', 'FINANZAS' )">
-                <a class="nav-link" th:href="@{/ventas}">
+            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR' )">
+                <a class="nav-link" th:href="@{/admin/ventas}">
                     <i class="bi bi-cash-coin me-2"></i> Ventas
-                </a>
-            </li>
-
-            <li class="nav-item" sec:authorize="hasAnyAuthority('VENDEDOR')">
-                <a class="nav-link" th:href="@{/cajere/alta-cliente}">
-                    <i class="bi bi-people me-2"></i> Nuevo Cliente
                 </a>
             </li>
 
             <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR')">
                 <a class="nav-link" th:href="@{/admin/usuarios/}">
                     <i class="bi bi-people me-2"></i> Usuarios
+                </a>
+            </li>
+
+            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR')">
+                <a class="nav-link" th:href="@{/admin/movimientos/}">
+                    <i class="bi bi-people me-2"></i> Movimientos
                 </a>
             </li>
 
@@ -51,12 +52,31 @@
                 </a>
             </li>
 
-            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR')">
-                <a class="nav-link" th:href="@{/admin/movimientos/}">
-                    <i class="bi bi-people me-2"></i> Movimientos
+            <!--##########################          OPCIONES PARA VENDEDOR          #################################-->
+            <li class="nav-item" sec:authorize="hasAnyAuthority('VENDEDOR')">
+                <a class="nav-link" th:href="@{/cajere/venta/}">
+                    <i class="bi bi-basket me-2"></i> Nueva Venta
                 </a>
             </li>
-        </ul>
 
+            <li class="nav-item" sec:authorize="hasAnyAuthority('VENDEDOR')">
+                <a class="nav-link" th:href="@{/cajere/compra/}">
+                    <i class="bi bi-bag-check me-2"></i> Compra Proveedor
+                </a>
+            </li>
+
+            <li class="nav-item" sec:authorize="hasAnyAuthority('VENDEDOR')">
+                <a class="nav-link" th:href="@{/cajere/retiro-efectivo/}">
+                    <i class="bi bi-cash me-2"></i> Reetiro de Efectivo
+                </a>
+            </li>
+
+            <li class="nav-item" sec:authorize="hasAnyAuthority('VENDEDOR')">
+                <a class="nav-link" th:href="@{/cajere/retiro-producto/}">
+                    <i class="bi bi-bag-heart me-2"></i> Retiro de Producto
+                </a>
+            </li>
+
+        </ul>
     </div>
 </aside>

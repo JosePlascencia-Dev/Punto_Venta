@@ -1,33 +1,34 @@
 :root {
-    --custom-red: #ea1212;
-    --custom-red-hover: #d10f0f;
-    --custom-red-light: rgba(234, 18, 18, 0.1);
+    --custom-green: #28a745; /* Verde Bootstrap modificado */
+    --custom-green-hover: #218838; /* Verde más oscuro para hover */
+    --custom-green-light: rgba(40, 167, 69, 0.1); /* Verde claro para fondos */
+    --custom-green-dark: #1e7e34; /* Verde más oscuro para cabeceras */
 }
 
-/* Personalización del color rojo */
-.bg-custom-red {
-    background-color: var(--custom-red) !important;
+/* Personalización del color verde */
+.bg-custom-green {
+    background-color: var(--custom-green) !important;
 }
 
-.btn-custom-red {
-    background-color: var(--custom-red);
-    border-color: var(--custom-red);
+.btn-custom-green {
+    background-color: var(--custom-green);
+    border-color: var(--custom-green);
     color: white;
 }
 
-.btn-custom-red:hover {
-    background-color: var(--custom-red-hover);
-    border-color: var(--custom-red-hover);
+.btn-custom-green:hover {
+    background-color: var(--custom-green-hover);
+    border-color: var(--custom-green-hover);
     color: white;
 }
 
-.btn-outline-custom-red {
-    border-color: var(--custom-red);
-    color: var(--custom-red);
+.btn-outline-custom-green {
+    border-color: var(--custom-green);
+    color: var(--custom-green);
 }
 
-.btn-outline-custom-red:hover {
-    background-color: var(--custom-red);
+.btn-outline-custom-green:hover {
+    background-color: var(--custom-green);
     color: white;
 }
 
@@ -43,17 +44,17 @@
 }
 
 .sidebar .nav-link.active {
-    background-color: var(--custom-red) !important;
+    background-color: var(--custom-green) !important;
     color: white !important;
 }
 
 .sidebar .nav-link:hover:not(.active) {
-    background-color: var(--custom-red-light) !important;
+    background-color: var(--custom-green-light) !important;
 }
 
 /* Header */
 .main-header {
-    background-color: #7e1212  !important;
+    background-color: var(--custom-green-dark) !important;
 }
 
 /* Footer */
@@ -62,20 +63,31 @@
 }
 
 /* Formularios */
-.bg-custom-red .form-control {
+.bg-custom-green .form-control {
     border-color: #fff;
     background-color: rgba(255, 255, 255, 0.9);
 }
 
-.bg-custom-red .form-control:focus {
-    box-shadow: 0 0 0 0.25rem rgba(234, 18, 18, 0.25);
+.bg-custom-green .form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
 }
 
 /* Controles del sidebar */
 .sidebar-toggle {
-    color: var(--custom-red);
+    color: var(--custom-green);
 }
 
 .sidebar-toggle:hover {
-    color: var(--custom-red-hover);
+    color: var(--custom-green-hover);
+}
+
+/* Texto sobre fondo verde */
+.bg-custom-green h1,
+.bg-custom-green h2,
+.bg-custom-green h3,
+.bg-custom-green h4,
+.bg-custom-green h5,
+.bg-custom-green h6,
+.bg-custom-green p {
+    color: white;
 }

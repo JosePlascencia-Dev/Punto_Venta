@@ -3,48 +3,149 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{plantillas/plantilla_inicio}">
 <head>
-  <title>Login | Zorro Abarrotero</title>
-  <!-- Puedes agregar CSS/JS adicional específico para login aquí -->
+  <title>Login | Sombrilla Verde</title>
+  <style>
+    .login-card {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-radius: 15px;
+      overflow: hidden;
+      border: none;
+    }
+
+    .login-header {
+      background-color: #28a745;
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .login-body {
+      padding: 2rem;
+      background-color: white;
+    }
+
+    .input-group-text {
+      background-color: white;
+      border-right: none;
+    }
+
+    .form-control {
+      border-left: none;
+    }
+
+    .form-control:focus {
+      border-color: #ced4da;
+      box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+    }
+
+    .form-control:focus + .input-group-text {
+      border-color: #28a745;
+    }
+
+    .btn-login {
+      background-color: #28a745;
+      color: white;
+      font-weight: 600;
+      padding: 0.75rem;
+      transition: all 0.3s;
+    }
+
+    .btn-login:hover {
+      background-color: #218838;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(33, 136, 56, 0.3);
+    }
+
+    .input-icon {
+      color: #6c757d;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .floating-label {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .floating-label input:not(:placeholder-shown) ~ label,
+    .floating-label input:focus ~ label {
+      top: -10px;
+      left: 10px;
+      font-size: 12px;
+      background-color: white;
+      padding: 0 5px;
+      color: #28a745;
+    }
+
+    .floating-label label {
+      position: absolute;
+      top: 12px;
+      left: 50px;
+      transition: all 0.2s;
+      pointer-events: none;
+      color: #6c757d;
+    }
+  </style>
 </head>
 <body>
-<!-- Sobrescribe solo el panel derecho -->
 <div layout:fragment="right-panel">
   <div class="container py-5">
-    <!-- Botón de regreso (posición absoluta) -->
-    <a th:href="@{/}" class="btn btn-outline-light  top-0 m-3">
-      <i class="bi bi-arrow-left"></i> Inicio
-    </a>
     <div class="row justify-content-center">
       <div class="col-md-8 col-lg-6">
-        <div class="text-center text-white p-4 rounded-3">
-          <h2 class="mb-4"><i class="bi bi-lock-fill"></i> Inicio de Sesión </h2>
-          <!-- Mensaje de error -->
-          <div th:if="${param.error}" class="alert alert-danger mb-3">
-            <i class="bi bi-exclamation-triangle-fill"></i>
-            <span th:text="${session['SPRING_SECURITY_LAST_EXCEPTION']?.message} ?: 'Credenciales incorrectas'">
-              Credenciales incorrectas
-            </span>
+        <div class="card login-card">
+          <div class="login-header">
+            <h2 class="mb-0"><i class="bi bi-lock-fill"></i> Inicio de Sesión</h2>
           </div>
-          <form th:action="@{/login}" method="post" class="needs-validation" novalidate>
+          <div class="login-body">
 
-            <div class="form-floating mb-3">
-              <input type="email" class="form-control" id="username" name="username" placeholder=" " required>
-              <label for="username"><i class="bi bi-envelope"></i> Correo Electrónico</label>
+            <!-- Mostrar mensaje de error personalizado -->
+            <div th:if="${session.error}" class="alert alert-danger mb-4">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              <span th:text="${session.error}">Error al iniciar sesión</span>
             </div>
 
-            <div class="form-floating mb-3">
-              <input type="password" class="form-control" id="password" name="password" placeholder=" " required>
-              <label for="password"><i class="bi bi-key"></i> Contraseña</label>
+            <!-- Mostrar mensaje de logout si existe -->
+            <div th:if="${param.logout}" class="alert alert-success mb-4">
+              <i class="bi bi-check-circle-fill"></i>
+              Has cerrado sesión correctamente.
             </div>
 
-            <button type="submit" class="btn btn-light btn-lg w-100 text-danger fw-bold mb-3">
-              <i class="bi bi-box-arrow-in-right"></i> Ingresar
-            </button>
-          </form>
+            <form th:action="@{/login}" method="post" class="needs-validation" novalidate>
+              <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="username" name="username" placeholder=" " required>
+                <label for="username"><i class="bi bi-person"></i> Nombre de Usuario</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="password" name="password" placeholder=" " required>
+                <label for="password"><i class="bi bi-key"></i> Contraseña</label>
+              </div>
+              <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-login btn-lg">
+                  <i class="bi bi-box-arrow-in-right"></i> Ingresar
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+  (() => {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>
 </body>
 </html>

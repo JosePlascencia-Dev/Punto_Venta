@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import punto_venta.sombrilla_verde.model.entity.venta.VentaEntity;
 import punto_venta.sombrilla_verde.repository.venta.VentaRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -30,5 +31,20 @@ public class VentaServiceImpl implements VentaService {
     @Override
     public VentaEntity findById(Integer id) {
         return ventaRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Long countVentasDelDia() {
+        return ventaRepository.countVentasDelDia();
+    }
+
+    @Override
+    public BigDecimal totalVentasDelDia() {
+        return ventaRepository.totalVentasDelDia();
+    }
+
+    @Override
+    public BigDecimal calcularGananciaDelDia() {
+        return ventaRepository.calcularGananciaDelDia();
     }
 }

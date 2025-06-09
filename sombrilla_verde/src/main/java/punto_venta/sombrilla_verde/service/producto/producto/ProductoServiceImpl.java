@@ -31,4 +31,9 @@ public class ProductoServiceImpl implements ProductoService {
     public ProductoEntity findById(Integer id) {
         return productoRepository.findById(id).orElse(null);
     }
+
+    @Override
+    public List<ProductoEntity> findAllOrderByExistenciaAsc() {
+        return productoRepository.findAllOrderByExistenciaAsc();
+    }
 }

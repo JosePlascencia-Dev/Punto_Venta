@@ -4,25 +4,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Zorro Abarrotero</title>
+  <title>Sombrilla</title>
   <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
   <link th:href="@{/css/styles.css}" rel="stylesheet">
+  <link rel="shortcut icon" th:href="@{/images/favicon.png}" type="image/x-icon">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 <body>
 <!-- Contenido común -->
 <div class="container-fluid vh-100">
   <div class="row h-100">
-    <!-- Mitad izquierda fija -->
-    <div class="col-md-6 d-none d-md-flex bg-white justify-content-center align-items-center">
+    <!-- Mitad izquierda fija (verde) -->
+    <div class="col-md-6 d-none d-md-flex bg-custom-green justify-content-center align-items-center">
       <div class="text-center p-5">
-        <h2 class="display-4 text-dark">Bienvenido al</h2>
-        <img th:src="@{/images/zorrogifconfondoblanco.gif}" class="img-fluid">
+        <img th:src="@{/images/logo.png}" class="img-fluid w-75">
       </div>
     </div>
 
-    <!-- Mitad derecha dinámica -->
-    <div class="col-md-6 d-flex justify-content-center align-items-center bg-custom-red" layout:fragment="right-panel">
+    <!-- Mitad derecha dinámica (blanca) -->
+    <div class="col-md-6 d-flex justify-content-center align-items-center bg-white" layout:fragment="right-panel">
       <!-- Contenido personalizado por página -->
     </div>
   </div>

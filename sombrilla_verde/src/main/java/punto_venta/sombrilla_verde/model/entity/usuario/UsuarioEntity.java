@@ -5,16 +5,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 
 @Entity(name = "usuarios")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UsuarioEntity {
+public class UsuarioEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_usuario")
@@ -37,4 +41,39 @@ public class UsuarioEntity {
     @Builder.Default
     @Column(name = "activo", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean activo = true;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(tipo.name()));
+    }
+
+    @Override
+    public String getPassword() {
+        return contrasenaHash;
+    }
+
+    @Override
+    public String getUsername() {
+        return nombreUsuario;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return activo;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return activo;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return activo;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return activo;
+    }
 }
