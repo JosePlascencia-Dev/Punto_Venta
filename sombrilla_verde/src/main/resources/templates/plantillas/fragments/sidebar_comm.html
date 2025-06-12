@@ -11,20 +11,32 @@
 
             <!--##########################        OPCIONES PARA ADMINISTRADOR       #################################-->
             <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR' )">
-                <a class="nav-link" th:href="@{/admin/productos}">
+                <a class="nav-link" th:href="@{/admin/productos/}">
                     <i class="bi bi-box-seam me-2"></i> Productos
                 </a>
             </li>
 
             <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR')">
-                <a class="nav-link" th:href="@{/admin/categorias}">
+                <a class="nav-link" th:href="@{/admin/categorias/}">
                     <i class="bi bi-box-seam me-2"></i> Categorias
                 </a>
             </li>
 
+            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR')">
+                <a class="nav-link" th:href="@{/admin/proveedores/}">
+                    <i class="bi bi-truck me-2"></i> Proveedores
+                </a>
+            </li>
+
             <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR' )">
-                <a class="nav-link" th:href="@{/admin/ventas}">
+                <a class="nav-link" th:href="@{/admin/ventas/}">
                     <i class="bi bi-cash-coin me-2"></i> Ventas
+                </a>
+            </li>
+
+            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR')">
+                <a class="nav-link" th:href="@{/admin/compras/}">
+                    <i class="bi bi-people me-2"></i> Compras
                 </a>
             </li>
 
@@ -37,18 +49,6 @@
             <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR')">
                 <a class="nav-link" th:href="@{/admin/movimientos/}">
                     <i class="bi bi-people me-2"></i> Movimientos
-                </a>
-            </li>
-
-            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR', 'FINANZAS')">
-                <a class="nav-link" th:href="@{/pedidos}">
-                    <i class="bi bi-people me-2"></i> Pedidos
-                </a>
-            </li>
-
-            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR')">
-                <a class="nav-link" th:href="@{/admin/proveedores/}">
-                    <i class="bi bi-truck me-2"></i> Proveedores
                 </a>
             </li>
 

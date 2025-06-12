@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantillas/plantilla_principal}">
+<head>
+    <title>Formulario de Producto</title>
+    <style>
+        .form-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+            border-left: 4px solid var(--custom-green);
+        }
+
+        .form-header {
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .text-custom-green {
+            color: var(--custom-green);
+        }
+
+        .form-check-input:checked {
+            background-color: var(--custom-green);
+            border-color: var(--custom-green);
+        }
+    </style>
+</head>
+<body>
+<main class="flex-grow-1 p-4" layout:fragment="content">
+    <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show mb-3">
+        <i class="bi bi-check-circle-fill"></i>
+        <span th:text="${mensajeExito} ?: 'Éxito'">Éxito</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show mb-3">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span th:text="${mensajeError}?: 'Error'">Error</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-custom-green text-white">
+            <h5 class="mb-0" th:text="${contenido}"><i class="bi bi-box-seam me-2"></i> </h5>
+        </div>
+
+        <div class="card-body">
+            <form th:action="@{/admin/productos/alta}" th:object="${producto}" method="post" class="needs-validation" novalidate>
+                <input type="hidden" th:field="*{id}" />
+
+                <!-- Información Básica -->
+                <div class="form-section">
+                    <h6 class="form-header text-custom-green">
+                        <i class="bi bi-info-circle"></i> Información del Producto
+                    </h6>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required minlength="3" maxlength="100">
+                                <label for="nombre">Nombre del producto</label>
+                                <div class="invalid-feedback">Debe ingresar un nombre (3-100 caracteres)</div>
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="codigo" th:field="*{codigo}" required maxlength="50">
+                                <label for="codigo">Código del producto</label>
+                                <div class="invalid-feedback">Debe ingresar un código</div>
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('codigo')}" th:errors="*{codigo}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Precios y Existencia -->
+                <div class="form-section">
+                    <h6 class="form-header text-custom-green">
+                        <i class="bi bi-currency-dollar"></i> Precios y Existencia
+                    </h6>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="number" step="0.01" class="form-control" id="precioCompra" th:field="*{precioCompra}" required min="0">
+                                <label for="precioCompra">Precio de compra</label>
+                                <div class="invalid-feedback">Ingrese un precio válido</div>
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('precioCompra')}" th:errors="*{precioCompra}"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="number" step="0.01" class="form-control" id="precioVenta" th:field="*{precioVenta}" required min="0">
+                                <label for="precioVenta">Precio de venta</label>
+                                <div class="invalid-feedback">Ingrese un precio válido</div>
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('precioVenta')}" th:errors="*{precioVenta}"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="number" step="0.001" class="form-control" id="existencia" th:field="*{existencia}" required min="0">
+                                <label for="existencia">Existencia</label>
+                                <div class="invalid-feedback">Ingrese una cantidad válida</div>
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('existencia')}" th:errors="*{existencia}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Categoría, Proveedor, Unidad -->
+                <div class="form-section">
+                    <h6 class="form-header text-custom-green">
+                        <i class="bi bi-diagram-3"></i> Relaciones y Unidad
+                    </h6>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <select class="form-select" id="categoria" th:field="*{categoria}" required>
+                                    <option th:each="cat : ${categorias}" th:value="${cat}" th:text="${cat.nombre}">Categoría</option>
+                                </select>
+                                <label for="categoria">Categoría</label>
+                                <div class="invalid-feedback">Seleccione una categoría</div>
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('categoria')}" th:errors="*{categoria}"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <select class="form-select" id="proveedor" th:field="*{proveedor}" required>
+                                    <option th:each="prov : ${proveedores}" th:value="${prov}" th:text="${prov.nombre}">Proveedor</option>
+                                </select>
+                                <label for="proveedor">Proveedor</label>
+                                <div class="invalid-feedback">Seleccione un proveedor</div>
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('proveedor')}" th:errors="*{proveedor}"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <select class="form-select" id="unidadMedida" th:field="*{unidadMedida}" required>
+                                    <option th:value="PIEZA">Pieza</option>
+                                    <option th:value="KILO">Kilo</option>
+                                    <option th:value="LITRO">Litro</option>
+                                    <option th:value="PAQUETE">Paquete</option>
+                                    <option th:value="CAJA">Caja</option>
+                                </select>
+                                <label for="unidadMedida">Unidad de medida</label>
+                                <div class="invalid-feedback">Seleccione una unidad</div>
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('unidadMedida')}" th:errors="*{unidadMedida}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estado -->
+                <div class="form-section">
+                    <h6 class="form-header text-custom-green">
+                        <i class="bi bi-toggle-on"></i> Estado
+                    </h6>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="activo" th:field="*{activo}">
+                        <label class="form-check-label" for="activo">Producto activo</label>
+                    </div>
+                    <small class="text-muted">
+                        Los productos inactivos no estarán disponibles para la venta.
+                    </small>
+                </div>
+
+                <!-- Botones -->
+                <div class="d-flex justify-content-end mt-4">
+                    <a th:href="@{/admin/productos/}" class="btn btn-outline-secondary me-2">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-custom-green">
+                        <i class="bi bi-save"></i> Guardar Producto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<script>
+    (() => {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+</body>
+</html>

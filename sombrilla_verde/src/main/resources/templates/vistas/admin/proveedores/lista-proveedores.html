@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantillas/plantilla_principal}">
+<head>
+  <title>Lista de Proveedores</title>
+  <style>
+    .badge-inactive {
+      background-color: #6c757d !important;
+    }
+
+    .btn-action {
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+<main class="flex-grow-1 p-4" layout:fragment="content">
+  <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show mb-3">
+    <i class="bi bi-check-circle-fill"></i>
+    <span th:text="${mensajeExito} ?: 'Éxito'">Éxito</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show mb-3">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <span th:text="${mensajeError}?: 'Error'">Error</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-custom-green text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0"><i class="bi bi-building me-2"></i> Lista de Proveedores</h5>
+      <a th:href="@{/admin/proveedores/alta}" class="btn btn-light btn-sm">
+        <i class="bi bi-plus-circle"></i> Nuevo Proveedor
+      </a>
+    </div>
+
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+          <tr>
+            <th scope="col">Empresa</th>
+            <th scope="col">Contacto</th>
+            <th scope="col">Teléfono</th>
+            <th scope="col">Email</th>
+            <th scope="col">Estado</th>
+            <th scope="col" class="text-end">Acciones</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="proveedor : ${proveedores}">
+            <td th:text="${proveedor.nombreEmpresa}"></td>
+            <td th:text="${proveedor.contactoPrincipal}"></td>
+            <td th:text="${proveedor.telefono}"></td>
+            <td th:text="${proveedor.email}"></td>
+            <td>
+                <span th:class="${proveedor.activo} ? 'badge bg-success' : 'badge badge-inactive'">
+                  <i th:class="${proveedor.activo} ? 'bi bi-check-circle' : 'bi bi-x-circle'"></i>
+                  <span th:text="${proveedor.activo} ? ' Activo' : ' Inactivo'"></span>
+                </span>
+            </td>
+            <td class="text-end">
+              <div class="btn-group" role="group">
+                <a th:href="@{/admin/proveedores/modificar/{id}(id=${proveedor.id})}"
+                   class="btn btn-sm btn-outline-primary btn-action me-1"
+                   title="Editar">
+                  <i class="bi bi-pencil-square"></i> Editar
+                </a>
+                <a th:href="@{/admin/proveedores/cambiar-estado/{id}(id=${proveedor.id})}"
+                   th:class="${proveedor.activo} ? 'btn btn-sm btn-outline-warning btn-action' : 'btn btn-sm btn-outline-success btn-action'"
+                   title="${proveedor.activo} ? 'Desactivar' : 'Activar'">
+                  <i th:class="${proveedor.activo} ? 'bi bi-toggle-off' : 'bi bi-toggle-on'"></i>
+                  <span th:text="${proveedor.activo} ? ' Desactivar' : ' Activar'"></span>
+                </a>
+                <a th:href="@{/admin/proveedores/eliminar/{id}(id=${proveedor.id})}"
+                   class="btn btn-sm btn-outline-danger btn-action ms-1"
+                   title="Eliminar"
+                   onclick="return confirm('¿Está seguro de eliminar este proveedor?');">
+                  <i class="bi bi-trash"></i> Eliminar
+                </a>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+        <!-- Paginación -->
+        <nav th:if="${totalPaginas > 1}">
+          <ul class="pagination justify-content-end">
+            <li class="page-item" th:classappend="${paginaActual == 0} ? 'disabled'">
+              <a class="page-link" th:href="@{/proveedores(page=${paginaActual - 1})}">Anterior</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPaginas - 1)}">
+              <a th:text="${i + 1}"
+                 th:href="@{/proveedores(page=${i})}"
+                 class="page-link"
+                 th:classappend="${i == paginaActual} ? 'active'"></a>
+            </li>
+            <li class="page-item" th:classappend="${paginaActual == totalPaginas - 1} ? 'disabled'">
+              <a class="page-link" th:href="@{/proveedores(page=${paginaActual + 1})}">Siguiente</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  function confirmarEliminacion(event) {
+    if (!confirm('¿Está seguro de eliminar este proveedor?')) {
+      event.preventDefault();
+    }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantillas/plantilla_principal}">
+<head>
+  <title>Formulario de Categoría</title>
+  <style>
+    .form-section {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background-color: #f8f9fa;
+      border-radius: 0.5rem;
+      border-left: 4px solid var(--custom-green);
+    }
+
+    .form-header {
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .text-custom-green {
+      color: var(--custom-green);
+    }
+
+    .form-check-input:checked {
+      background-color: var(--custom-green);
+      border-color: var(--custom-green);
+    }
+  </style>
+</head>
+<body>
+<main class="flex-grow-1 p-4" layout:fragment="content">
+  <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show mb-3">
+    <i class="bi bi-check-circle-fill"></i>
+    <span th:text="${mensajeExito} ?: 'Éxito'">Éxito</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show mb-3">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <span th:text="${mensajeError}?: 'Error'">Error</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-custom-green text-white">
+      <h5 class="mb-0" th:text="${contenido}"><i class="bi bi-tags me-2"></i> </h5>
+    </div>
+
+    <div class="card-body">
+      <form th:action="@{/admin/categorias/alta}" th:object="${categoria}" method="post" class="needs-validation" novalidate>
+        <input type="hidden" name="id" th:value="${categoria.id}" th:field="*{id}" />
+
+        <!-- Sección de información básica -->
+        <div class="form-section">
+          <h6 class="form-header text-custom-green">
+            <i class="bi bi-info-circle"></i> Información Básica
+          </h6>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required
+                       minlength="3" maxlength="50">
+                <label for="nombre">Nombre de la categoría</label>
+                <div class="invalid-feedback">
+                  Debe ingresar un nombre (3-50 caracteres)
+                </div>
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="detalles"
+                       th:field="*{detalles}" maxlength="255">
+                <label for="detalles">Detalles adicionales</label>
+                <div class="invalid-feedback">
+                  Máximo 255 caracteres
+                </div>
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('detalles')}" th:errors="*{detalles}"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección de estado -->
+        <div class="form-section">
+          <h6 class="form-header text-custom-green">
+            <i class="bi bi-toggle-on"></i> Estado
+          </h6>
+
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" role="switch"
+                   id="activo" th:field="*{activo}" th:checked="${categoria.activo}">
+            <label class="form-check-label" for="activo">
+              Categoría activa
+            </label>
+          </div>
+          <small class="text-muted">
+            Las categorías inactivas no estarán disponibles para nuevos productos.
+          </small>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="d-flex justify-content-end mt-4">
+          <a th:href="@{/admin/categorias/}" class="btn btn-outline-secondary me-2">
+            <i class="bi bi-x-circle"></i> Cancelar
+          </a>
+          <button type="submit" class="btn btn-custom-green">
+            <i class="bi bi-save"></i> Guardar Categoría
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<!-- Script de validación visual de Bootstrap -->
+<script>
+  (() => {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>
+</body>
+</html>
