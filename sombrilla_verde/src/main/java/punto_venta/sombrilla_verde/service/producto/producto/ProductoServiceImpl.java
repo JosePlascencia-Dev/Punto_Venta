@@ -36,4 +36,19 @@ public class ProductoServiceImpl implements ProductoService {
     public List<ProductoEntity> findAllOrderByExistenciaAsc() {
         return productoRepository.findAllOrderByExistenciaAsc();
     }
+
+    @Override
+    public ProductoEntity findByNombre(String nombre) {
+        return productoRepository.findByNombre(nombre);
+    }
+
+    @Override
+    public ProductoEntity findByCodigo(String codigo) {
+        return productoRepository.findByCodigo(codigo);
+    }
+
+    @Override
+    public List<ProductoEntity> buscarPorCategoriaYProveedor(Integer categoriaId, Integer proveedorId) {
+        return productoRepository.buscarPorCategoriaYProveedor(categoriaId, proveedorId);
+    }
 }

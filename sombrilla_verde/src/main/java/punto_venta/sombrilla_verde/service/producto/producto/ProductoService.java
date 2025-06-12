@@ -10,4 +10,7 @@ public interface ProductoService {
     void deleteById(Integer id);
     ProductoEntity findById(Integer id);
     List<ProductoEntity> findAllOrderByExistenciaAsc();
+    ProductoEntity findByNombre(String nombre);
+    ProductoEntity findByCodigo(String codigo);
+    List<ProductoEntity> buscarPorCategoriaYProveedor(Integer categoriaId, Integer proveedorId);
 }

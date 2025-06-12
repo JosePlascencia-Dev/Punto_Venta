@@ -41,6 +41,12 @@
             </li>
 
             <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR')">
+                <a class="nav-link" th:href="@{/admin/retiros/}">
+                    <i class="bi bi-people me-2"></i> Retiros
+                </a>
+            </li>
+
+            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR')">
                 <a class="nav-link" th:href="@{/admin/usuarios/}">
                     <i class="bi bi-people me-2"></i> Usuarios
                 </a>
@@ -55,13 +61,13 @@
             <!--##########################          OPCIONES PARA VENDEDOR          #################################-->
             <li class="nav-item" sec:authorize="hasAnyAuthority('VENDEDOR')">
                 <a class="nav-link" th:href="@{/cajere/venta/}">
-                    <i class="bi bi-basket me-2"></i> Nueva Venta
+                    <i class="bi bi-cart4 me-2"></i> Nueva Venta
                 </a>
             </li>
 
             <li class="nav-item" sec:authorize="hasAnyAuthority('VENDEDOR')">
                 <a class="nav-link" th:href="@{/cajere/compra/}">
-                    <i class="bi bi-bag-check me-2"></i> Compra Proveedor
+                    <i class="bi bi-basket me-2"></i> Compra Proveedor
                 </a>
             </li>
 

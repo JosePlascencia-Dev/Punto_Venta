@@ -20,7 +20,7 @@
             </span>
     </div>
     <div class="container-fluid">
-        <h1 class="text-success mb-4"><i class="bi bi-cart-plus me-2"></i>Nueva Venta</h1>
+        <h1 class="text-success mb-4"><i class="bi bi-basket me-2"></i>Compra a  Proveedor</h1>
 
         <div class="row g-4">
             <!-- Sección de búsqueda -->
@@ -30,13 +30,13 @@
                         <h5 class="mb-0"><i class="bi bi-search me-2"></i>Buscar Productos</h5>
                     </div>
                     <div class="card-body">
-                        <form id="searchForm" th:action="@{/cajere/venta/buscar-productos}" method="get" class="row g-3">
-                            <input type="hidden" name="clienteId" th:value="${cliente?.id}">
+                        <form id="searchForm" th:action="@{/cajere/compra/buscar-producto}" method="get" class="row g-3">
+
 
                             <div class="col-12">
                                 <label for="productSearch" class="form-label">Buscar producto</label>
                                 <input type="text" class="form-control" id="productSearch" name="codigo"
-                                       placeholder="Codigo..." th:value="${param.codigo}">
+                                       placeholder="Nombre o Codigo..." th:value="${codigo}" autofocus>
                             </div>
 
                             <div class="col-md-6">
@@ -64,7 +64,7 @@
                             </div>
 
                             <div class="col-12">
-                                <button type="submit" class="btn btn-success w-100">
+                                <button type="submit" class="btn btn-success w-100 btn-lg">
                                     <i class="bi bi-search me-1"></i> Buscar
                                 </button>
                             </div>
@@ -100,7 +100,7 @@
                                                   th:text="${producto.existencia} + ' ' + ${producto.unidadMedida}"></span>
                                     </td>
                                     <td>
-                                        <form th:action="@{/cajere/venta/agregar-producto/{id}(id=${producto.id})}" th:object="${producto}" method="post">
+                                        <form th:action="@{/cajere/compra/agregar-producto/{id}(id=${producto.id})}" th:object="${producto}" method="post">
                                             <input type="hidden" name="idproductos" th:value="${producto?.id}">
                                             <button class="btn btn-sm btn-outline-success add-product" type="submit">
                                                 <i class="bi bi-plus-lg"></i>
@@ -120,7 +120,6 @@
                 <div class="card shadow-sm">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0"><i class="bi bi-cart-check me-2"></i>Productos Seleccionados</h5>
-                        <span class="badge bg-success rounded-pill" id="itemsCount">0</span>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -140,12 +139,12 @@
                                         <strong th:text="${product.producto.nombre}">Nombre</strong><br>
                                         <small class="text-muted" th:text="${product.producto.categoria.nombre} + ' · ' + ${product.producto.proveedor.nombreEmpresa}">Detalle</small>
                                     </td>
-                                    <td class="text-danger fw-bold" th:text="'$' + ${#numbers.formatDecimal(product.producto.precioVenta, 1, 2)}">$0.00</td>
-                                    <td class="text-danger fw-bold" th:text="${product.cantidad}" > </td>
-                                    <td class="text-danger fw-bold" th:text="'$' + ${product.producto.precioVenta * product.cantidad}" >
+                                    <td class="text-success fw-bold" th:text="'$' + ${#numbers.formatDecimal(product.producto.precioVenta, 1, 2)}">$0.00</td>
+                                    <td class="text-success fw-bold" th:text="${product.cantidad}" > </td>
+                                    <td class="text-success fw-bold" th:text="'$' + ${product.producto.precioVenta * product.cantidad}" >
                                     </td>
                                     <td>
-                                        <form th:action="@{/cajere/venta/eliminar-producto/{id}(id=${product.producto.id})}" method="post">
+                                        <form th:action="@{/cajere/compra/eliminar-producto/{id}(id=${product.producto.id})}" method="post">
                                             <input type="hidden" name="idcar" th:value="${product.producto.id}" />
                                             <button type="submit" class="btn btn-sm btn-outline-danger">
                                                 <i class="bi bi-trash"></i>
@@ -155,20 +154,16 @@
                                 </tr>
                                 </tbody>
                                 <tfoot class="table-light">
-                                <tr>
-                                    <td colspan="4" class="text-end fw-bold">Total:</td>
-                                    <td colspan="2" class="fw-bold text-danger" th:text="${compra?.getPrecioTotal()}" id="totalVenta">$0.00</td>
-                                </tr>
                                 </tfoot>
                             </table>
                         </div>
                     </div>
                     <div class="card-footer bg-white d-flex justify-content-between">
-                        <form th:action="@{/cajere/venta/procesar-venta}" method="post" class="d-flex justify-content-between  gap-2 w-100">
-                            <a class="btn btn-outline-secondary" th:href="@{/cajere/venta/borrar-venta}">
+                        <form th:action="@{/cajere/compra/procesar-compra}" method="post" class="d-flex justify-content-between  gap-2 w-100">
+                            <a class="btn btn-outline-secondary btn-lg" th:href="@{/cajere/venta/borrar-venta}">
                                 <i class="bi bi-x-circle me-1"></i> Limpiar
                             </a>
-                            <button type="submit" class="btn btn-danger">
+                            <button type="submit" class="btn btn-success btn-lg">
                                 <i class="bi bi-credit-card me-1"></i> Procesar Venta
                             </button>
                         </form>
@@ -183,20 +178,20 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <div class="card border-danger h-100">
+                                <div class="card border-success h-100">
                                     <div class="card-body py-2 d-flex flex-column">
                                         <h6 class="card-title text-muted mb-2">Productos</h6>
-                                        <p class="h4 text-danger mb-auto" th:if="${compra != null} " th:text=" ${compra?.getCantidadProductos()}" id="resumenCantidad">0</p>
-                                        <p class="h4 text-danger mb-auto" th:if="${compra == null}">0</p>
+                                        <h2 class="display-3 text-success mb-auto" th:if="${compra != null} " th:text=" ${compra?.getCantidadProductos()}" id="resumenCantidad">0</h2>
+                                        <h2 class="display-3 text-success mb-auto" th:if="${compra == null}">0</h2>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <div class="card border-danger h-100">
+                                <div class="card border-success h-100">
                                     <div class="card-body py-2 d-flex flex-column">
                                         <h6 class="card-title text-muted mb-2">Total</h6>
-                                        <p class="h4 text-danger mb-auto" th:if="${compra == null}">$0.00</p>
-                                        <p class="h4 text-danger mb-auto" th:if="${compra != null}" th:text="'$' + ${compra?.getPrecioTotal()}" id="resumenTotal">$0.00</p>
+                                        <h2 class="display-3 text-success mtext-dangerb-auto" th:if="${compra == null}">$0.00</h2>
+                                        <h2 class="display-3 text-success mb-auto" th:if="${compra != null}" th:text="'$' + ${compra?.getPrecioTotal()}" id="resumenTotal">$0.00</h2>
                                     </div>
                                 </div>
                             </div>

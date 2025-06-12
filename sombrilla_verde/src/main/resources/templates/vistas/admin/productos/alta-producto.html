@@ -123,7 +123,7 @@
                         <div class="col-md-4">
                             <div class="form-floating mb-3">
                                 <select class="form-select" id="categoria" th:field="*{categoria}" required>
-                                    <option th:each="cat : ${categorias}" th:value="${cat}" th:text="${cat.nombre}">Categoría</option>
+                                    <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}">Categoría</option>
                                 </select>
                                 <label for="categoria">Categoría</label>
                                 <div class="invalid-feedback">Seleccione una categoría</div>
@@ -134,7 +134,7 @@
                         <div class="col-md-4">
                             <div class="form-floating mb-3">
                                 <select class="form-select" id="proveedor" th:field="*{proveedor}" required>
-                                    <option th:each="prov : ${proveedores}" th:value="${prov}" th:text="${prov.nombre}">Proveedor</option>
+                                    <option th:each="prov : ${proveedores}" th:value="${prov.id}" th:text="${prov.nombreEmpresa}">Proveedor</option>
                                 </select>
                                 <label for="proveedor">Proveedor</label>
                                 <div class="invalid-feedback">Seleccione un proveedor</div>

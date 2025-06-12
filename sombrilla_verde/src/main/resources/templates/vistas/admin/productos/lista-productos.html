@@ -53,8 +53,8 @@
                         <td th:text="${producto.codigo}"></td>
                         <td th:text="${producto.categoria.nombre}"></td>
                         <td th:text="${producto.proveedor.nombreEmpresa}"></td>
-                        <td th:text="${#numbers.formatDecimal(producto.precioCompra, 1, 'POINT', 2, 'ZERO')}"></td>
-                        <td th:text="${#numbers.formatDecimal(producto.precioVenta, 1, 'POINT', 2, 'ZERO')}"></td>
+                        <td th:text="${'$' + #numbers.formatDecimal(producto.precioCompra, 1, 2)}"></td>
+                        <td th:text="${'$' + #numbers.formatDecimal(producto.precioVenta, 1, 2)}"></td>
                         <td th:text="${producto.existencia}"></td>
                         <td th:text="${producto.unidadMedida}"></td>
                         <td>
@@ -80,7 +80,7 @@
 
                                 <a th:href="@{/admin/productos/eliminar/{id}(id=${producto.id})}"
                                    class="btn btn-sm btn-outline-danger"
-                                   onclick="confirmarEliminacion(event)">
+                                   onclick="return confirm('¿Está seguro de eliminar este producto?');">
                                     <i class="bi bi-trash"></i> Eliminar
                                 </a>
                             </div>
@@ -92,13 +92,5 @@
         </div>
     </div>
 </main>
-
-<script>
-    function confirmarEliminacion(event) {
-        if (!confirm('¿Estás seguro de eliminar este producto?')) {
-            event.preventDefault();
-        }
-    }
-</script>
 </body>
 </html>

@@ -89,35 +89,9 @@
           </tr>
           </tbody>
         </table>
-
-        <!-- Paginación -->
-        <nav th:if="${totalPaginas > 1}">
-          <ul class="pagination justify-content-end">
-            <li class="page-item" th:classappend="${paginaActual == 0} ? 'disabled'">
-              <a class="page-link" th:href="@{/proveedores(page=${paginaActual - 1})}">Anterior</a>
-            </li>
-            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPaginas - 1)}">
-              <a th:text="${i + 1}"
-                 th:href="@{/proveedores(page=${i})}"
-                 class="page-link"
-                 th:classappend="${i == paginaActual} ? 'active'"></a>
-            </li>
-            <li class="page-item" th:classappend="${paginaActual == totalPaginas - 1} ? 'disabled'">
-              <a class="page-link" th:href="@{/proveedores(page=${paginaActual + 1})}">Siguiente</a>
-            </li>
-          </ul>
-        </nav>
       </div>
     </div>
   </div>
 </main>
-
-<script>
-  function confirmarEliminacion(event) {
-    if (!confirm('¿Está seguro de eliminar este proveedor?')) {
-      event.preventDefault();
-    }
-  }
-</script>
 </body>
 </html>
