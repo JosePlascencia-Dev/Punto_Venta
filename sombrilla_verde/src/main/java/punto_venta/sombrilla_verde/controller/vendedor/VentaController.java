@@ -33,6 +33,7 @@ public class VentaController {
 
     @GetMapping(value = "/")
     public String vistaVenta(Model model) {
+        model.addAttribute("compra", this.carrito);
         model.addAttribute("proveedores", proveedorService.findAll());
         model.addAttribute("categorias", categoriaService.findAll());
         model.addAttribute("productos", productoService.findAll());

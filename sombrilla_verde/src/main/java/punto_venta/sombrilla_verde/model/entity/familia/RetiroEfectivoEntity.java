@@ -2,6 +2,8 @@ package punto_venta.sombrilla_verde.model.entity.familia;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,9 +25,11 @@ public class RetiroEfectivoEntity {
     @Column(name = "id_retiro")
     private Integer id;
 
+    @NotNull
     @Column(name = "monto", nullable = false, precision = 10, scale = 2)
     private BigDecimal monto;
 
+    @NotBlank
     @Column(name = "motivo", nullable = false)
     private String motivo;
 

@@ -1,10 +1,147 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantillas/plantilla_principal}">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Retiro de Efectivo</title>
+    <style>
+        .form-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+            border-left: 4px solid var(--custom-green);
+        }
+
+        .form-header {
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .text-custom-green {
+            color: var(--custom-green);
+        }
+
+        .amount-input {
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+    </style>
 </head>
 <body>
+<main class="flex-grow-1 p-4" layout:fragment="content">
+    <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show mb-3">
+        <i class="bi bi-check-circle-fill"></i>
+        <span th:text="${mensajeExito} ?: 'Éxito'">Éxito</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show mb-3">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span th:text="${mensajeError}?: 'Error'">Error</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 
+    <div class="card shadow-sm">
+        <div class="card-header bg-custom-green text-white">
+            <h5 class="mb-0"><i class="bi bi-cash-coin me-2"></i>Registro de Retiro de Efectivo</h5>
+        </div>
+
+        <div class="card-body">
+            <form th:action="@{/cajere/retiro-efectivo/registrar}"
+                  th:object="${retiro}" method="post"
+                  class="needs-validation" novalidate>
+
+                <!-- Campos ocultos -->
+                <input type="hidden" th:field="*{id}" />
+                <input type="hidden" name="usuario" th:value="${#authentication.principal.id}" />
+
+                <!-- Encabezado del formulario -->
+                <div class="form-section mb-4">
+                    <h5 class="text-custom-green fw-bold mb-3">
+                        <i class="bi bi-cash-stack me-1"></i> Datos del Retiro
+                    </h5>
+
+                    <div class="row g-3">
+                        <!-- Monto -->
+                        <div class="col-md-6">
+                            <label for="monto" class="form-label">Monto del Retiro <span class="text-danger">*</span></label>
+                            <div class="input-group has-validation">
+                                <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                                <input type="number" class="form-control amount-input" id="monto"
+                                       th:field="*{monto}" required min="0.01" step="0.01" placeholder="0.00">
+                                <div class="invalid-feedback">
+                                    Ingrese un monto válido (mayor a 0)
+                                </div>
+                            </div>
+                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('monto')}" th:errors="*{monto}"></div>
+                        </div>
+
+                        <!-- Motivo -->
+                        <div class="col-md-6">
+                            <label for="motivo" class="form-label">Motivo del Retiro <span class="text-danger">*</span></label>
+                            <div class="input-group has-validation">
+                                <span class="input-group-text"><i class="bi bi-pencil-square"></i></span>
+                                <input type="text" class="form-control" id="motivo"
+                                       th:field="*{motivo}" required minlength="5" maxlength="255" placeholder="Ej: Compra de insumos">
+                                <div class="invalid-feedback">
+                                    Debe ingresar un motivo válido (5-255 caracteres)
+                                </div>
+                            </div>
+                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('motivo')}" th:errors="*{motivo}"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="d-flex justify-content-end pt-3 border-top mt-4">
+                    <a th:href="@{/cajere/venta/}" class="btn btn-outline-secondary me-2">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-custom-green">
+                        <i class="bi bi-save"></i> Registrar Retiro
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</main>
+
+<!-- Script de validación visual de Bootstrap -->
+<script>
+    (() => {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+
+<!-- Script para formatear el monto -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const montoInput = document.getElementById('monto');
+
+        // Formatear al perder el foco
+        montoInput.addEventListener('blur', function() {
+            if(this.value) {
+                this.value = parseFloat(this.value).toFixed(2);
+            }
+        });
+
+        // Enfocar automáticamente el campo de monto
+        montoInput.focus();
+    });
+</script>
 </body>
 </html>

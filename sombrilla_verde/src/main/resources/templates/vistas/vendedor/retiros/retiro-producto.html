@@ -1,10 +1,206 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantillas/plantilla_principal}">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Venta - Vendedor</title>
 </head>
 <body>
+<main layout:fragment="content">
+    <div th:if="${mensajeExito}" class="alert alert-success mb-3">
+        <i class="bi bi-check-circle-fill"></i>
+        <span th:text="${mensajeExito} ?: 'Exito'">
+              Exito
+            </span>
+    </div>
+    <div th:if="${mensajeError}" class="alert alert-danger mb-3">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span th:text="${mensajeError}?: 'Error'">
+              Error
+            </span>
+    </div>
+    <div class="container-fluid">
+        <h1 class="text-success mb-4"><i class="bi bi-bag-heart me-2"></i>Retiro de Producto</h1>
 
+        <div class="row g-4">
+            <!-- Sección de búsqueda -->
+            <div class="col-lg-5">
+                <div class="card shadow-sm border-success">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-search me-2"></i>Buscar Productos</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="searchForm" th:action="@{/cajere/retiro-producto/buscar-producto}" method="get" class="row g-3">
+
+
+                            <div class="col-12">
+                                <label for="productSearch" class="form-label">Buscar producto</label>
+                                <input type="text" class="form-control" id="productSearch" name="codigo"
+                                       placeholder="Nombre o Codigo..." th:value="${codigo}" autofocus>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="categoryFilter" class="form-label">Categoría</label>
+                                <select class="form-select" id="categoryFilter" name="categoriaId">
+                                    <option value="">Todas</option>
+                                    <option th:each="categoria : ${categorias}"
+                                            th:value="${categoria.id}"
+                                            th:text="${categoria.nombre}"
+                                            th:selected="${param.categoriaId != null && param.categoriaId == categoria.id}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="brandFilter" class="form-label">Proveedor</label>
+                                <select class="form-select" id="brandFilter" name="proveedorId">
+                                    <option value="">Todos</option>
+                                    <option th:each="proveedor : ${proveedores}"
+                                            th:value="${proveedor.id}"
+                                            th:text="${proveedor.nombreEmpresa}"
+                                            th:selected="${param.proveedorId != null && param.proveedorId == proveedor.id}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success w-100 btn-lg">
+                                    <i class="bi bi-search me-1"></i> Buscar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Resultados de búsqueda -->
+                <div class="card shadow-sm mt-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>Resultados</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" id="searchResultsTable">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Costo</th>
+                                    <th>Stock</th>
+                                    <th>Acciones</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="producto : ${productos}">
+                                    <td>
+                                        <strong th:text="${producto.nombre}"></strong><br>
+                                        <small class="text-muted" th:text="${producto.categoria.nombre} + ' · ' + ${producto.proveedor.nombreEmpresa}"></small>
+                                    </td>
+                                    <td class="text-success fw-bold" th:text="'$' + ${#numbers.formatDecimal(producto.precioCompra, 1, 2)}"></td>
+                                    <td>
+                                            <span th:class="${producto.existencia > 0} ? 'badge bg-success' : 'badge bg-secondary'"
+                                                  th:text="${producto.existencia} + ' ' + ${producto.unidadMedida}"></span>
+                                    </td>
+                                    <td>
+                                        <form th:action="@{/cajere/retiro-producto/agregar-producto/{id}(id=${producto.id})}" th:object="${producto}" method="post">
+                                            <input type="hidden" name="idproductos" th:value="${producto?.id}">
+                                            <button class="btn btn-sm btn-outline-success add-product" type="submit">
+                                                <i class="bi bi-plus-lg"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de productos seleccionados -->
+            <div class="col-lg-7">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-cart-check me-2"></i>Productos Seleccionados</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" id="productsTable">
+                                <thead class="table-light">
+                                <tr>
+                                    <th width="40%">Producto</th>
+                                    <th width="15%">Costo</th>
+                                    <th width="20%">Cantidad</th>
+                                    <th width="15%">Subtotal</th>
+                                    <th width="5%"></th>
+                                </tr>
+                                </thead>
+                                <tbody id="selectedProducts">
+                                <tr th:each="product : ${retiro?.productos}">
+                                    <td>
+                                        <strong th:text="${product.producto.nombre}">Nombre</strong><br>
+                                        <small class="text-muted" th:text="${product.producto.categoria.nombre} + ' · ' + ${product.producto.proveedor.nombreEmpresa}">Detalle</small>
+                                    </td>
+                                    <td class="text-success fw-bold" th:text="'$' + ${#numbers.formatDecimal(product.producto.precioCompra, 1, 2)}">$0.00</td>
+                                    <td class="text-success fw-bold" th:text="${product.cantidad}" > </td>
+                                    <td class="text-success fw-bold" th:text="'$' + ${product.producto.precioCompra * product.cantidad}" >
+                                    </td>
+                                    <td>
+                                        <form th:action="@{/cajere/retiro-producto/eliminar-producto/{id}(id=${product.producto.id})}" method="post">
+                                            <input type="hidden" name="idcar" th:value="${product.producto.id}" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                </tbody>
+                                <tfoot class="table-light">
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white d-flex justify-content-between">
+                        <form th:action="@{/cajere/retiro-producto/procesar-retiro}" method="post" class="d-flex justify-content-between  gap-2 w-100">
+                            <a class="btn btn-outline-secondary btn-lg" th:href="@{/cajere/retiro-producto/borrar-retiro}">
+                                <i class="bi bi-x-circle me-1"></i> Limpiar
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-credit-card me-1"></i> Procesar Compra
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Resumen rápido -->
+                <div class="card shadow-sm mt-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Resumen</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-success h-100">
+                                    <div class="card-body py-2 d-flex flex-column">
+                                        <h6 class="card-title text-muted mb-2">Productos</h6>
+                                        <h2 class="display-3 text-success mb-auto" th:if="${compra != null} " th:text=" ${compra?.getCantidadProductos()}" id="resumenCantidad">0</h2>
+                                        <h2 class="display-3 text-success mb-auto" th:if="${compra == null}">0</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-success h-100">
+                                    <div class="card-body py-2 d-flex flex-column">
+                                        <h6 class="card-title text-muted mb-2">Total</h6>
+                                        <h2 class="display-3 text-success mtext-dangerb-auto" th:if="${compra == null}">$0.00</h2>
+                                        <h2 class="display-3 text-success mb-auto" th:if="${compra != null}" th:text="'$' + ${compra?.getCostoTotal()}" id="resumenTotal">$0.00</h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
 </body>
 </html>

@@ -1,43 +1,41 @@
 package punto_venta.sombrilla_verde.controller.vendedor;
 
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import punto_venta.sombrilla_verde.model.domain.ProductosSeleccionados;
+import punto_venta.sombrilla_verde.model.entity.familia.RetiroEfectivoEntity;
+import punto_venta.sombrilla_verde.model.entity.familia.RetiroFamiliarEntity;
 import punto_venta.sombrilla_verde.model.entity.producto.ProductoEntity;
-import punto_venta.sombrilla_verde.service.compra.compra.CompraService;
-import punto_venta.sombrilla_verde.service.compra.detalles_compras.DetallesCompraService;
+import punto_venta.sombrilla_verde.service.familia.retiro_efectivo.RetiroEfectivoService;
+import punto_venta.sombrilla_verde.service.familia.retiro_familiar.RetiroFamiliarService;
 import punto_venta.sombrilla_verde.service.producto.categoria.CategoriaService;
 import punto_venta.sombrilla_verde.service.producto.producto.ProductoService;
-import punto_venta.sombrilla_verde.service.proveedor.ProveedorService;
 
 import java.util.List;
 
 @Controller
-@RequestMapping(value = "cajere/compra")
-public class CompraController {
-    @Autowired
-    CompraService compraService;
-    @Autowired
-    DetallesCompraService detallesCompraService;
-    @Autowired
-    ProveedorService proveedorService;
-    @Autowired
-    CategoriaService categoriaService;
-    @Autowired
-    ProductoService productoService;
+@RequestMapping(value = "cajere/retiro-producto")
+public class RetirosProductoController {
 
-    ProductosSeleccionados carrito = new ProductosSeleccionados();
+    @Autowired
+    private RetiroFamiliarService retiroFamiliarService;
+
+    @Autowired
+    private ProductoService productoService;
+
+    @Autowired
+    private CategoriaService categoriaService;
+
+    // Aquí usamos el carrito para los productos seleccionados para retiro
+    private final ProductosSeleccionados carrito = new ProductosSeleccionados();
 
     @GetMapping(value = "/")
-    public String vistaVenta(Model model) {
-        model.addAttribute("compra", this.carrito);
-        model.addAttribute("proveedores", proveedorService.findAll());
-        model.addAttribute("categorias", categoriaService.findAll());
-        model.addAttribute("productos", productoService.findAll());
-        return "vistas/vendedor/compra";
+    public String vistaRetiro(Model model) {
+        model.addAttribute("retiro", carrito);
+        cargarDatosProductos(model);
+        return "vistas/vendedor/retiros/retiro-producto";
     }
 
     @GetMapping(value = "/buscar-producto")
@@ -45,88 +43,90 @@ public class CompraController {
             @RequestParam(required = false) String codigo,
             @RequestParam(required = false) Integer categoriaId,
             @RequestParam(required = false) Integer proveedorId,
-            HttpSession session,
             Model model) {
 
         try {
             cargarDatosProductos(model);
             List<ProductoEntity> productosFiltrados;
+
             if (codigo != null && !codigo.trim().isEmpty()) {
                 try {
-                    ProductoEntity producto;
-                    if(productoService.findByCodigo(codigo) != null){
-                        producto = productoService.findByCodigo(codigo);
-                    }else{
+                    ProductoEntity producto = productoService.findByCodigo(codigo);
+
+                    if (producto == null) {
                         producto = productoService.findByNombre(codigo);
                     }
+
                     if (producto != null) {
-                        this.carrito.add(producto);
-                    }else{
+                        carrito.add(producto);
+                    } else {
                         model.addAttribute("mensajeError", "Producto no encontrado");
                     }
-                }catch (NumberFormatException e) {
+
+                } catch (NumberFormatException e) {
                     model.addAttribute("mensajeError", "Código inválido");
                 }
-                cargarDatosProductos(model);
-                model.addAttribute("compra", this.carrito);
-                return "vistas/vendedor/compra";
-            }else {
-                cargarDatosProductos(model);
-                productosFiltrados = productoService.buscarPorCategoriaYProveedor(categoriaId,proveedorId);
+
+                model.addAttribute("retiro", this.carrito);
+                return "vistas/vendedor/retiros/retiro-producto";
+            } else {
+                productosFiltrados = productoService.buscarPorCategoriaYProveedor(categoriaId, proveedorId);
                 model.addAttribute("productos", productosFiltrados);
-                return "vistas/vendedor/compra";
+                model.addAttribute("retiro", carrito);
+                return "vistas/vendedor/retiros/retiro-producto";
             }
+
         } catch (Exception e) {
-            model.addAttribute("mensajeError", "Error en búsqueda: " + e.getMessage());
+            model.addAttribute("mensajeError", "Error en la búsqueda: " + e.getMessage());
             cargarDatosProductos(model);
-            return "vistas/vendedor/compra";
+            model.addAttribute("retiro", carrito);
+            return "vistas/vendedor/retiros/retiro-producto";
         }
     }
 
     @PostMapping("agregar-producto/{id}")
     public String agregarProducto(@PathVariable("id") Integer id, Model model) {
-        if(id != null){
+        if (id != null) {
             ProductoEntity producto = productoService.findById(id);
-            this.carrito.add(producto);
+            carrito.add(producto);
         } else {
             model.addAttribute("mensajeError", "Error al agregar producto");
         }
+
         cargarDatosProductos(model);
-        model.addAttribute("compra", this.carrito);
-        return "vistas/vendedor/compra";
+        model.addAttribute("retiro", carrito);
+        return "vistas/vendedor/retiros/retiro-producto";
     }
 
     @PostMapping("eliminar-producto/{id}")
     public String eliminarProducto(@PathVariable("id") Integer id, Model model) {
-        if(id != null){
+        if (id != null) {
             ProductoEntity producto = productoService.findById(id);
             carrito.remove(producto);
         } else {
-            model.addAttribute("mensajeError", "Error al agregar producto");
+            model.addAttribute("mensajeError", "Error al eliminar producto");
         }
+
         cargarDatosProductos(model);
-        model.addAttribute("compra", this.carrito);
-        return "vistas/vendedor/compra";
+        model.addAttribute("retiro", carrito);
+        return "vistas/vendedor/retiros/retiro-producto";
     }
 
-    @GetMapping("borrar-compra")
-    public String borrarVenta(Model model) {
-        this.carrito.clear();
+    @GetMapping("borrar-retiro")
+    public String borrarRetiro(Model model) {
+        carrito.clear();
         cargarDatosProductos(model);
-        model.addAttribute("compra", this.carrito);
-        return "vistas/vendedor/compra";
+        model.addAttribute("retiro", carrito);
+        return "vistas/vendedor/retiros/retiro-producto";
     }
-
-
 
     private void cargarDatosProductos(Model model) {
         model.addAttribute("categorias", categoriaService.findAll());
-        model.addAttribute("proveedores", proveedorService.findAll());
         model.addAttribute("codigo", "");
-        // Si no hay búsqueda, mostrar todos los productos
+
         if (!model.containsAttribute("productos")) {
             model.addAttribute("productos", productoService.findAll());
         }
     }
-
 }
+
