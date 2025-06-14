@@ -132,7 +132,7 @@ CREATE TABLE retiros_familiares (
     id_retiro INT AUTO_INCREMENT PRIMARY KEY,
     fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     id_usuario INT NOT NULL ,
-    motivo VARCHAR(200) NOT NULL,
+    motivo VARCHAR(50),
     total_costo DECIMAL(10,2) UNSIGNED NOT NULL,
     notas TEXT,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),

@@ -52,7 +52,7 @@ public class ProductoEntity {
     @Column(name = "precio_venta", nullable = false, precision = 12, scale = 2)
     private BigDecimal precioVenta;
 
-    @DecimalMin(value = "0.0", inclusive = false, message = "La existencia debe ser mayor que cero")
+    @DecimalMin(value = "0.0", inclusive = true, message = "La existencia no puede ser negativa")
     @NotNull(message = "La existencia no puede ser nula")
     @Column(name = "existencia", nullable = false, precision = 10, scale = 3, columnDefinition = "DECIMAL(10,3) UNSIGNED DEFAULT 0")
     private BigDecimal existencia = BigDecimal.ZERO;

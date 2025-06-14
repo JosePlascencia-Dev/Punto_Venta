@@ -32,14 +32,8 @@ public class RetiroFamiliarEntity {
     @JoinColumn(name = "id_usuario", nullable = false)
     private UsuarioEntity usuario;
 
-    @Column(name = "motivo", nullable = false)
-    private String motivo;
-
     @Column(name = "total_costo", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalCosto;
-
-    @Column(columnDefinition = "TEXT")
-    private String notas;
 
     @OneToMany(mappedBy = "retiro", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetalleRetiroFamiliarEntity> detalles;

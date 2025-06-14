@@ -140,7 +140,23 @@
                                         <small class="text-muted" th:text="${product.producto.categoria.nombre} + ' · ' + ${product.producto.proveedor.nombreEmpresa}">Detalle</small>
                                     </td>
                                     <td class="text-success fw-bold" th:text="'$' + ${#numbers.formatDecimal(product.producto.precioCompra, 1, 2)}">$0.00</td>
-                                    <td class="text-success fw-bold" th:text="${product.cantidad}" > </td>
+                                    <td>
+                                        <form th:action="@{/cajere/retiro-producto/actualizar-cantidad}" method="post" class="d-flex">
+                                            <input type="hidden" name="productoId" th:value="${product.producto.id}" />
+
+                                            <input type="number"
+                                                   name="cantidad"
+                                                   th:min="${#strings.toLowerCase(product.producto.unidadMedida) == 'kilo' or #strings.toLowerCase(product.producto.unidadMedida) == 'litro'} ? 0.01 : 1"
+                                                   th:step="${#strings.toLowerCase(product.producto.unidadMedida) == 'kilo' or #strings.toLowerCase(product.producto.unidadMedida) == 'litro'} ? 0.01 : 1"
+                                                   th:value="${product.cantidad}"
+                                                   class="form-control form-control-sm me-1"
+                                                   style="max-width: 100px;" />
+
+                                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-check-lg"></i>
+                                            </button>
+                                        </form>
+                                    </td>
                                     <td class="text-success fw-bold" th:text="'$' + ${product.producto.precioCompra * product.cantidad}" >
                                     </td>
                                     <td>
@@ -181,8 +197,8 @@
                                 <div class="card border-success h-100">
                                     <div class="card-body py-2 d-flex flex-column">
                                         <h6 class="card-title text-muted mb-2">Productos</h6>
-                                        <h2 class="display-3 text-success mb-auto" th:if="${compra != null} " th:text=" ${compra?.getCantidadProductos()}" id="resumenCantidad">0</h2>
-                                        <h2 class="display-3 text-success mb-auto" th:if="${compra == null}">0</h2>
+                                        <h2 class="display-3 text-success mb-auto" th:if="${retiro != null} " th:text=" ${retiro?.getCantidadProductos()}" id="resumenCantidad">0</h2>
+                                        <h2 class="display-3 text-success mb-auto" th:if="${retiro == null}">0</h2>
                                     </div>
                                 </div>
                             </div>
@@ -190,8 +206,8 @@
                                 <div class="card border-success h-100">
                                     <div class="card-body py-2 d-flex flex-column">
                                         <h6 class="card-title text-muted mb-2">Total</h6>
-                                        <h2 class="display-3 text-success mtext-dangerb-auto" th:if="${compra == null}">$0.00</h2>
-                                        <h2 class="display-3 text-success mb-auto" th:if="${compra != null}" th:text="'$' + ${compra?.getCostoTotal()}" id="resumenTotal">$0.00</h2>
+                                        <h2 class="display-3 text-success mtext-dangerb-auto" th:if="${retiro == null}">$0</h2>
+                                        <h2 class="display-3 text-success mb-auto" th:if="${retiro != null}" th:text="'$' + ${#numbers.formatDecimal(retiro?.getCostoTotal(), 1, 2)}" id="resumenTotal">$0.00</h2>
                                     </div>
                                 </div>
                             </div>

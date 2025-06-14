@@ -16,7 +16,8 @@
         <div class="card border-success">
           <div class="card-body">
             <h5 class="card-title">Ventas Hoy</h5>
-            <p class="display-6 text-success" th:if="${ventasHoy != null}" th:text="${ventasHoy}"></p>
+            <p class="display-6 text-success" th:if="${ventasHoy != null}"
+               th:text="${ventasHoy}">0.00</p>
             <p class="display-6 text-success" th:if="${ventasHoy == null}">0</p>
           </div>
         </div>
@@ -25,7 +26,8 @@
         <div class="card border-success">
           <div class="card-body">
             <h5 class="card-title">Total de ventas</h5>
-            <p class="display-6 text-success" th:if="${totalHoy != null}" th:text="'$' + ${totalHoy}"></p>
+            <p class="display-6 text-success" th:if="${totalHoy != null}"
+               th:text="'$ ' + ${#numbers.formatDecimal(totalHoy, 1, 2)}">$ 0.00</p>
             <p class="display-6 text-success" th:if="${totalHoy == null}">$0.00</p>
           </div>
         </div>
@@ -34,7 +36,8 @@
         <div class="card border-success">
           <div class="card-body">
             <h5 class="card-title">Ganancias</h5>
-            <p class="display-6 text-success" th:if="${gananciasHoy != null}" th:text="'$' + ${gananciasHoy}"></p>
+            <p class="display-6 text-success" th:if="${gananciasHoy != null}"
+               th:text="'$ ' + ${#numbers.formatDecimal(gananciasHoy, 1, 2)}">$ 0.00</p>
             <p class="display-6 text-success" th:if="${gananciasHoy == null}">$0.00</p>
           </div>
         </div>

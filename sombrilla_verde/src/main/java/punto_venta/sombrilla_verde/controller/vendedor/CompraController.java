@@ -2,85 +2,66 @@ package punto_venta.sombrilla_verde.controller.vendedor;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import punto_venta.sombrilla_verde.model.domain.ProductosSeleccionados;
+import punto_venta.sombrilla_verde.model.entity.compra.CompraEntity;
+import punto_venta.sombrilla_verde.model.entity.compra.DetallesCompraEntity;
 import punto_venta.sombrilla_verde.model.entity.producto.ProductoEntity;
+import punto_venta.sombrilla_verde.model.entity.proveedor.ProveedorEntity;
+import punto_venta.sombrilla_verde.model.entity.usuario.UsuarioEntity;
 import punto_venta.sombrilla_verde.service.compra.compra.CompraService;
 import punto_venta.sombrilla_verde.service.compra.detalles_compras.DetallesCompraService;
 import punto_venta.sombrilla_verde.service.producto.categoria.CategoriaService;
 import punto_venta.sombrilla_verde.service.producto.producto.ProductoService;
 import punto_venta.sombrilla_verde.service.proveedor.ProveedorService;
+import punto_venta.sombrilla_verde.service.usuario.UsuarioService;
+import punto_venta.sombrilla_verde.service.venta.venta.VentaService;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Controller
 @RequestMapping(value = "cajere/compra")
 public class CompraController {
     @Autowired
-    CompraService compraService;
+    private CompraService compraService;
     @Autowired
-    DetallesCompraService detallesCompraService;
+    private DetallesCompraService detallesCompraService;
     @Autowired
-    ProveedorService proveedorService;
+    private VentaService ventaService;
     @Autowired
-    CategoriaService categoriaService;
+    private ProveedorService proveedorService;
     @Autowired
-    ProductoService productoService;
+    private CategoriaService categoriaService;
+    @Autowired
+    private ProductoService productoService;
+    @Autowired
+    private UsuarioService usuarioService;
 
+    ProveedorEntity proveedor = null;
     ProductosSeleccionados carrito = new ProductosSeleccionados();
 
     @GetMapping(value = "/")
     public String vistaVenta(Model model) {
+        cargarDatosProductos(model);
         model.addAttribute("compra", this.carrito);
-        model.addAttribute("proveedores", proveedorService.findAll());
-        model.addAttribute("categorias", categoriaService.findAll());
-        model.addAttribute("productos", productoService.findAll());
         return "vistas/vendedor/compra";
     }
 
-    @GetMapping(value = "/buscar-producto")
-    public String buscarProductos(
-            @RequestParam(required = false) String codigo,
-            @RequestParam(required = false) Integer categoriaId,
-            @RequestParam(required = false) Integer proveedorId,
-            HttpSession session,
+    @PostMapping(value = "/seleccionar-proveedor")
+    public String seleccionar(
+            @RequestParam(required = true) Integer proveedorId,
             Model model) {
-
-        try {
-            cargarDatosProductos(model);
-            List<ProductoEntity> productosFiltrados;
-            if (codigo != null && !codigo.trim().isEmpty()) {
-                try {
-                    ProductoEntity producto;
-                    if(productoService.findByCodigo(codigo) != null){
-                        producto = productoService.findByCodigo(codigo);
-                    }else{
-                        producto = productoService.findByNombre(codigo);
-                    }
-                    if (producto != null) {
-                        this.carrito.add(producto);
-                    }else{
-                        model.addAttribute("mensajeError", "Producto no encontrado");
-                    }
-                }catch (NumberFormatException e) {
-                    model.addAttribute("mensajeError", "Código inválido");
-                }
-                cargarDatosProductos(model);
-                model.addAttribute("compra", this.carrito);
-                return "vistas/vendedor/compra";
-            }else {
-                cargarDatosProductos(model);
-                productosFiltrados = productoService.buscarPorCategoriaYProveedor(categoriaId,proveedorId);
-                model.addAttribute("productos", productosFiltrados);
-                return "vistas/vendedor/compra";
-            }
-        } catch (Exception e) {
-            model.addAttribute("mensajeError", "Error en búsqueda: " + e.getMessage());
-            cargarDatosProductos(model);
-            return "vistas/vendedor/compra";
-        }
+        this.proveedor = proveedorService.findById(proveedorId);
+        cargarDatosProductos(model);
+        return "vistas/vendedor/compra";
     }
 
     @PostMapping("agregar-producto/{id}")
@@ -117,15 +98,54 @@ public class CompraController {
         return "vistas/vendedor/compra";
     }
 
+    @Transactional
+    @PostMapping("procesar-compra")
+    public String procesarVenta(
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        if (carrito.getProductos().isEmpty()) {
+            redirectAttributes.addFlashAttribute("mensajeError", "No hay productos en el carrito");
+            return "redirect:/cajere/compra/";
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UsuarioEntity encargado = usuarioService.findByNombreUsuario(authentication.getName()).orElseThrow(() -> new IllegalStateException("Usuario no encontrado"));
+        CompraEntity compra = CompraEntity.builder()
+                .proveedor(this.proveedor)
+                .fechaCompra(LocalDateTime.now())
+                .usuarioRegistro(encargado)
+                .total(carrito.getCostoTotal())
+                .build();
+        compra = compraService.save(compra);
+        for (ProductosSeleccionados.ProductosInter item : carrito.getProductos()) {
+            ProductoEntity producto = productoService.findById(item.getProducto().getId());
+            BigDecimal nuevaExistencia = producto.getExistencia().add(item.getCantidad());
+            producto.setExistencia(nuevaExistencia);
+            productoService.save(producto);
 
+            DetallesCompraEntity detalle = DetallesCompraEntity.builder()
+                    .compra(compra)
+                    .producto(producto)
+                    .cantidad(item.getCantidad())
+                    .costoUnitario(producto.getPrecioCompra())
+                    .totalLinea(producto.getPrecioCompra().multiply(item.getCantidad()))
+                    .build();
+            detallesCompraService.save(detalle);
+        }
+
+        // 5) Limpiar carrito y mostrar mensaje
+        carrito.clear();
+        redirectAttributes.addFlashAttribute("mensajeExito",
+                "Compra registrada con éxito (ID: " + compra.getId() + ")");
+        return "redirect:/cajere/compra/";
+    }
 
     private void cargarDatosProductos(Model model) {
-        model.addAttribute("categorias", categoriaService.findAll());
         model.addAttribute("proveedores", proveedorService.findAll());
-        model.addAttribute("codigo", "");
-        // Si no hay búsqueda, mostrar todos los productos
-        if (!model.containsAttribute("productos")) {
-            model.addAttribute("productos", productoService.findAll());
+        if (!model.containsAttribute("productos") && this.proveedor != null) {
+            model.addAttribute("productos", productoService.findByProveedor(this.proveedor));
+            model.addAttribute("proveedorSeleccionado", proveedor);
+            model.addAttribute("ventaTotal", ventaService.totalVentasDesdeUltimaCompra(this.proveedor.getId()));
+            model.addAttribute("costoTotal", ventaService.costoVentasDesdeUltimaCompra(this.proveedor.getId()));
         }
     }
 

@@ -36,7 +36,6 @@ public class CategoriasController {
 
     @PostMapping(value = "alta")
     public String guardarCategoria(@Valid @ModelAttribute(value = "categoria") CategoriaEntity categoria, BindingResult result, RedirectAttributes redirectAttributes , Model model) {
-        System.out.println("ID recibido del formulario: " + categoria.getId());
         if (result.hasErrors()) {
             for (ObjectError error : result.getAllErrors()) {
                 System.out.println("Error: " + error.getDefaultMessage());

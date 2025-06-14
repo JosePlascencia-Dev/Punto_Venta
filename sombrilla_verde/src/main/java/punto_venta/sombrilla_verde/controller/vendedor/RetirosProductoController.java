@@ -1,32 +1,47 @@
 package punto_venta.sombrilla_verde.controller.vendedor;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import punto_venta.sombrilla_verde.model.domain.ProductosSeleccionados;
+import punto_venta.sombrilla_verde.model.entity.familia.DetalleRetiroFamiliarEntity;
 import punto_venta.sombrilla_verde.model.entity.familia.RetiroEfectivoEntity;
 import punto_venta.sombrilla_verde.model.entity.familia.RetiroFamiliarEntity;
 import punto_venta.sombrilla_verde.model.entity.producto.ProductoEntity;
+import punto_venta.sombrilla_verde.model.entity.usuario.UsuarioEntity;
+import punto_venta.sombrilla_verde.model.entity.venta.DetalleVentaEntity;
+import punto_venta.sombrilla_verde.model.entity.venta.VentaEntity;
+import punto_venta.sombrilla_verde.service.familia.detalles_retiro_familiar.DetallesRetiroFamiliarService;
 import punto_venta.sombrilla_verde.service.familia.retiro_efectivo.RetiroEfectivoService;
 import punto_venta.sombrilla_verde.service.familia.retiro_familiar.RetiroFamiliarService;
 import punto_venta.sombrilla_verde.service.producto.categoria.CategoriaService;
 import punto_venta.sombrilla_verde.service.producto.producto.ProductoService;
+import punto_venta.sombrilla_verde.service.usuario.UsuarioService;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping(value = "cajere/retiro-producto")
 public class RetirosProductoController {
-
     @Autowired
     private RetiroFamiliarService retiroFamiliarService;
-
+    @Autowired
+    private DetallesRetiroFamiliarService detallesRetiroFamiliarService;
     @Autowired
     private ProductoService productoService;
-
     @Autowired
     private CategoriaService categoriaService;
+    @Autowired
+    UsuarioService usuarioService;
 
     // Aquí usamos el carrito para los productos seleccionados para retiro
     private final ProductosSeleccionados carrito = new ProductosSeleccionados();
@@ -118,6 +133,65 @@ public class RetirosProductoController {
         cargarDatosProductos(model);
         model.addAttribute("retiro", carrito);
         return "vistas/vendedor/retiros/retiro-producto";
+    }
+
+    @PostMapping("actualizar-cantidad")
+    public String actualizarCantidad(@RequestParam("productoId") Integer productoId,
+                                     @RequestParam("cantidad") BigDecimal cantidad) {
+        carrito.actualizarCantidad(productoId, cantidad);
+        return "redirect:/cajere/retiro-producto/";
+    }
+
+    @Transactional
+    @PostMapping("procesar-retiro")
+    public String procesarVenta(
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        if (carrito.getProductos().isEmpty()) {
+            redirectAttributes.addFlashAttribute("mensajeError", "No hay productos en el carrito");
+            return "redirect:/cajere/retiro-producto/";
+        }
+
+        for (ProductosSeleccionados.ProductosInter item : carrito.getProductos()) {
+            ProductoEntity producto = productoService.findById(item.getProducto().getId());
+            if (producto.getExistencia().compareTo(item.getCantidad()) < 0) {
+                redirectAttributes.addFlashAttribute("mensajeError",
+                        "Stock insuficiente para: " + producto.getNombre());
+                return "redirect:/cajere/retiro-producto/";
+            }
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Optional<UsuarioEntity> vendedor = usuarioService.findByNombreUsuario(authentication.getName());
+
+        RetiroFamiliarEntity retiro = RetiroFamiliarEntity.builder()
+                .fecha(LocalDateTime.now())
+                .usuario(vendedor.get())
+                .totalCosto(carrito.getPrecioTotal())
+                .build();
+        retiro = retiroFamiliarService.save(retiro);
+
+        for (ProductosSeleccionados.ProductosInter item : carrito.getProductos()) {
+            ProductoEntity producto = item.getProducto();
+
+            BigDecimal nuevoStock = producto.getExistencia().subtract(item.getCantidad());
+            producto.setExistencia(nuevoStock);
+            productoService.save(producto);
+
+            DetalleRetiroFamiliarEntity detalle = DetalleRetiroFamiliarEntity.builder()
+                    .retiro(retiro)
+                    .producto(producto)
+                    .cantidad(item.getCantidad())
+                    .costoUnitario(producto.getPrecioCompra())
+                    .totalLinea(producto.getPrecioCompra().multiply(item.getCantidad()))
+                    .build();
+            detallesRetiroFamiliarService.save(detalle);
+        }
+        carrito.clear();
+        redirectAttributes.addFlashAttribute("mensajeExito",
+                "Venta registrada con éxito (ID: " + retiro.getId() + ")");
+        return "redirect:/cajere/retiro-producto/";
     }
 
     private void cargarDatosProductos(Model model) {

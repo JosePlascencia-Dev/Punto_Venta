@@ -47,4 +47,14 @@ public class VentaServiceImpl implements VentaService {
     public BigDecimal calcularGananciaDelDia() {
         return ventaRepository.calcularGananciaDelDia();
     }
+
+    @Override
+    public BigDecimal totalVentasDesdeUltimaCompra(Integer proveedorId) {
+        return ventaRepository.totalVentasDesdeUltimaCompra(proveedorId);
+    }
+
+    @Override
+    public BigDecimal costoVentasDesdeUltimaCompra(Integer proveedorId) {
+        return ventaRepository.costoVentasDesdeUltimaCompra(proveedorId);
+    }
 }

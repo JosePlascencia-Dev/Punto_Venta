@@ -27,48 +27,37 @@
             <div class="col-lg-5">
                 <div class="card shadow-sm border-success">
                     <div class="card-header bg-success text-white">
-                        <h5 class="mb-0"><i class="bi bi-search me-2"></i>Buscar Productos</h5>
+                        <h5 class="mb-0"><i class="bi bi-search me-2"></i>Seleccionar Proveedor</h5>
                     </div>
                     <div class="card-body">
-                        <form id="searchForm" th:action="@{/cajere/compra/buscar-producto}" method="get" class="row g-3">
-
-
+                        <form id="proveedorForm" th:action="@{/cajere/compra/seleccionar-proveedor}" method="post" class="row g-3">
                             <div class="col-12">
-                                <label for="productSearch" class="form-label">Buscar producto</label>
-                                <input type="text" class="form-control" id="productSearch" name="codigo"
-                                       placeholder="Nombre o Codigo..." th:value="${codigo}" autofocus>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="categoryFilter" class="form-label">Categoría</label>
-                                <select class="form-select" id="categoryFilter" name="categoriaId">
-                                    <option value="">Todas</option>
-                                    <option th:each="categoria : ${categorias}"
-                                            th:value="${categoria.id}"
-                                            th:text="${categoria.nombre}"
-                                            th:selected="${param.categoriaId != null && param.categoriaId == categoria.id}">
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="brandFilter" class="form-label">Proveedor</label>
-                                <select class="form-select" id="brandFilter" name="proveedorId">
-                                    <option value="">Todos</option>
+                                <label for="proveedorSelect" class="form-label">Proveedor</label>
+                                <select class="form-select" id="proveedorSelect" name="proveedorId" required
+                                        onchange="this.form.submit()">
+                                    <option value="">Seleccione un proveedor</option>
                                     <option th:each="proveedor : ${proveedores}"
                                             th:value="${proveedor.id}"
                                             th:text="${proveedor.nombreEmpresa}"
-                                            th:selected="${param.proveedorId != null && param.proveedorId == proveedor.id}">
+                                            th:selected="${proveedorSeleccionado != null && proveedorSeleccionado.id == proveedor.id}">
                                     </option>
                                 </select>
                             </div>
-
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-success w-100 btn-lg">
-                                    <i class="bi bi-search me-1"></i> Buscar
-                                </button>
-                            </div>
                         </form>
+                        <!-- Información del proveedor seleccionado -->
+                        <div th:if="${proveedorSeleccionado != null}" class="mt-4 p-3 bg-light rounded">
+                            <h5 class="text-success mb-3">Información del Proveedor</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Nombre:</strong> <span th:text="${proveedorSeleccionado.nombreEmpresa}"></span></p>
+                                    <p><strong>Contacto:</strong> <span th:text="${proveedorSeleccionado.getContactoPrincipal()}"></span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Teléfono:</strong> <span th:text="${proveedorSeleccionado.telefono}"></span></p>
+                                    <p><strong>Email:</strong> <span th:text="${proveedorSeleccionado.email}"></span></p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -140,7 +129,23 @@
                                         <small class="text-muted" th:text="${product.producto.categoria.nombre} + ' · ' + ${product.producto.proveedor.nombreEmpresa}">Detalle</small>
                                     </td>
                                     <td class="text-success fw-bold" th:text="'$' + ${#numbers.formatDecimal(product.producto.precioCompra, 1, 2)}">$0.00</td>
-                                    <td class="text-success fw-bold" th:text="${product.cantidad}" > </td>
+                                    <td>
+                                        <form th:action="@{/cajere/venta/actualizar-cantidad}" method="post" class="d-flex">
+                                            <input type="hidden" name="productoId" th:value="${product.producto.id}" />
+
+                                            <input type="number"
+                                                   name="cantidad"
+                                                   th:min="${#strings.toLowerCase(product.producto.unidadMedida) == 'kilo' or #strings.toLowerCase(product.producto.unidadMedida) == 'litro'} ? 0.01 : 1"
+                                                   th:step="${#strings.toLowerCase(product.producto.unidadMedida) == 'kilo' or #strings.toLowerCase(product.producto.unidadMedida) == 'litro'} ? 0.01 : 1"
+                                                   th:value="${product.cantidad}"
+                                                   class="form-control form-control-sm me-1"
+                                                   style="max-width: 100px;" />
+
+                                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-check-lg"></i>
+                                            </button>
+                                        </form>
+                                    </td>
                                     <td class="text-success fw-bold" th:text="'$' + ${product.producto.precioCompra * product.cantidad}" >
                                     </td>
                                     <td>
@@ -170,6 +175,35 @@
                     </div>
                 </div>
 
+                <div class="card shadow-sm mt-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Presupuesto (Desde la ultima compra)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-success h-100">
+                                    <div class="card-body py-2 d-flex flex-column">
+                                        <h6 class="card-title text-muted mb-2">Ventas Totales</h6>
+                                        <h2 class="display-3 text-success mtext-dangerb-auto" th:if="${ventaTotal == null}">$0.00</h2>
+                                        <h2 class="display-3 text-success mb-auto" th:if="${ventaTotal != null}" th:text="'$' + ${#numbers.formatDecimal(ventaTotal, 1, 2)}" id="ventaTotal">$0.00</h2>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-success h-100">
+                                    <div class="card-body py-2 d-flex flex-column">
+                                        <h6 class="card-title text-muted mb-2">Ventas sin Ganacias</h6>
+                                        <h2 class="display-3 text-success mtext-dangerb-auto" th:if="${costoTotal == null}">$0.00</h2>
+                                        <h2 class="display-3 text-success mb-auto" th:if="${costoTotal != null}" th:text="'$' + ${#numbers.formatDecimal(costoTotal, 1, 2)}" id="costoTotal">$0.00</h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Resumen rápido -->
                 <div class="card shadow-sm mt-4">
                     <div class="card-header bg-white">
@@ -191,7 +225,7 @@
                                     <div class="card-body py-2 d-flex flex-column">
                                         <h6 class="card-title text-muted mb-2">Total</h6>
                                         <h2 class="display-3 text-success mtext-dangerb-auto" th:if="${compra == null}">$0.00</h2>
-                                        <h2 class="display-3 text-success mb-auto" th:if="${compra != null}" th:text="'$' + ${compra?.getCostoTotal()}" id="resumenTotal">$0.00</h2>
+                                        <h2 class="display-3 text-success mb-auto" th:if="${compra != null}" th:text="'$' + ${#numbers.formatDecimal(compra?.getCostoTotal(), 1, 2)}" id="resumenTotal">$0.00</h2>
                                     </div>
                                 </div>
                             </div>

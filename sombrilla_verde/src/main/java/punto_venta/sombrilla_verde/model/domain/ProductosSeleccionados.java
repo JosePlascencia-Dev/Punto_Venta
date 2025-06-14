@@ -104,6 +104,15 @@ public class ProductosSeleccionados {
                 .orElse(BigDecimal.ZERO);
     }
 
+    public void actualizarCantidad(Integer productoId, BigDecimal cantidad) {
+        for (ProductosInter pi : productos) {
+            if (pi.getProducto().getId().equals(productoId)) {
+                pi.setCantidad(cantidad);
+                break;
+            }
+        }
+    }
+
     // Limpiar carrito
     public void clear() {
         productos.clear();

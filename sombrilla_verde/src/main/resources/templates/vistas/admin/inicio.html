@@ -56,6 +56,7 @@
                             <th>Producto</th>
                             <th>Categoría</th>
                             <th>Proveedor</th>
+                            <th class="text-end">Precio Compra</th>
                             <th class="text-end">Precio Venta</th>
                             <th class="text-end">Stock</th>
                             <th class="text-center">Unidad</th>
@@ -67,18 +68,15 @@
                             <td th:text="${producto.id}">1</td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <img th:src="${producto.getImagenPath()}"
-                                         width="40" height="40"
-                                         class="rounded-circle me-2 border"
-                                         onerror="this.src='/images/default-product.png'">
                                     <span th:text="${producto.nombre}">Nombre</span>
                                 </div>
                             </td>
                             <td th:text="${producto.categoria?.nombre}">Categoría</td>
                             <td th:text="${producto.proveedor?.nombreEmpresa}">Proveedor</td>
+                            <td class="text-end" th:text="'$' + ${#numbers.formatDecimal(producto.precioCompra, 1, 2, 'COMMA')}">0.00</td>
                             <td class="text-end" th:text="'$' + ${#numbers.formatDecimal(producto.precioVenta, 1, 2, 'COMMA')}">0.00</td>
                             <td class="text-end">
-                                    <span th:class="${producto.existencia.compareTo(T(java.math.BigDecimal).valueOf(10)) < 0} ? 'text-danger fw-bold' : ''"
+                                    <span th:class="${producto.existencia.compareTo(new java.math.BigDecimal(10)) < 0} ? 'text-danger fw-bold' : ''"
                                           th:text="${#numbers.formatDecimal(producto.existencia, 1, 2, 'COMMA')}">0</span>
                             </td>
                             <td class="text-center" th:text="${producto.unidadMedida}">KG</td>

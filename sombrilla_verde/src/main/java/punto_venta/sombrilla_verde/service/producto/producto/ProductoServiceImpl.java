@@ -3,6 +3,7 @@ package punto_venta.sombrilla_verde.service.producto.producto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import punto_venta.sombrilla_verde.model.entity.producto.ProductoEntity;
+import punto_venta.sombrilla_verde.model.entity.proveedor.ProveedorEntity;
 import punto_venta.sombrilla_verde.repository.producto.ProductoRepository;
 
 import java.util.List;
@@ -50,5 +51,10 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     public List<ProductoEntity> buscarPorCategoriaYProveedor(Integer categoriaId, Integer proveedorId) {
         return productoRepository.buscarPorCategoriaYProveedor(categoriaId, proveedorId);
+    }
+
+    @Override
+    public List<ProductoEntity> findByProveedor(ProveedorEntity proveedor) {
+        return productoRepository.findByProveedor(proveedor);
     }
 }
