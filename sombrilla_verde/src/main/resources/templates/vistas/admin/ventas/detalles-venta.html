@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantillas/plantilla_principal}">
+<head>
+  <title>Detalle de Venta</title>
+  <style>
+    .detalle-card {
+      border-left: 4px solid var(--custom-green);
+      width: 100%; /* Asegura que la tarjeta ocupe todo el ancho */
+      max-width: 1200px; /* Opcional: limita el ancho máximo */
+      margin: 0 auto; /* Centra la tarjeta horizontalmente */
+    }
+
+    .detalle-header {
+      background-color: var(--custom-green);
+      color: white;
+      padding: 0.75rem 1.25rem;
+    }
+
+    .table th {
+      background-color: #f8f9fa;
+    }
+
+    /* Nuevos estilos añadidos */
+    main {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .card-body {
+      padding: 2rem;
+    }
+
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      table-layout: auto;
+    }
+
+    /* Ajusta el ancho de las columnas */
+    th:nth-child(1), td:nth-child(1) {
+      width: 50%;
+    }
+
+    th:nth-child(2), td:nth-child(2),
+    th:nth-child(3), td:nth-child(3),
+    th:nth-child(4), td:nth-child(4) {
+      width: 16.66%;
+      text-align: right;
+    }
+
+    .btn-volver {
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+<main class="flex-grow-1 p-4" layout:fragment="content">
+  <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show mb-4">
+    <i class="bi bi-check-circle-fill me-2"></i>
+    <span th:text="${mensajeExito} ?: 'Éxito'">Éxito</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show mb-4">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <span th:text="${mensajeError} ?: 'Error'">Error</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <div class="card detalle-card shadow-sm">
+    <div class="card-header detalle-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">
+        <i class="bi bi-file-text-fill me-2"></i> Detalle de Venta (ID: <span th:text="${venta.id}"></span>)
+      </h5>
+    </div>
+
+    <div class="card-body">
+      <div class="row mb-6">
+        <div class="col-md-6">
+          <p><strong>Fecha:</strong> <span th:text="${#temporals.format(venta.fechaVenta, 'dd/MM/yyyy HH:mm')}"></span></p>
+        </div>
+        <div class="col-md-6">
+          <p><strong>Vendedor:</strong> <span th:text="${venta.vendedor.nombreUsuario}"></span></p>
+        </div>
+        <div class="col-md-6">
+          <p><strong>Total Venta:</strong> <span class="fw-bold text-success" th:text="${'$' + #numbers.formatDecimal(venta.total, 1, 'COMMA', 2, 'POINT')}"></span></p>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+          <tr>
+            <th>Producto</th>
+            <th scope="col" style="width: 15%;" class="text-end">Cantidad</th>
+            <th scope="col" style="width: 15%;" class="text-end">Precio Unitario</th>
+            <th scope="col" style="width: 15%;" class="text-end">Total Línea</th>
+            <th scope="col" style="width: 20%;" class="text-end acciones-cell">Acciones</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="detalle : ${detalles}" class="align-middle">
+            <td th:text="${detalle.producto.nombre}"></td>
+            <td class="text-end" th:text="${#numbers.formatDecimal(detalle.cantidad, 1, 'COMMA', 3, 'POINT')}"></td>
+            <td class="text-end" th:text="${'$' + #numbers.formatDecimal(detalle.precioUnitario, 1, 'COMMA', 2, 'POINT')}"></td>
+            <td class="text-end" th:text="${'$' + #numbers.formatDecimal(detalle.totalLinea, 1, 'COMMA', 2, 'POINT')}"></td>
+            <td>
+              <a th:href="@{/admin/ventas/{id}/eliminar/{idP}(id=${detalle.producto.id})}"
+                   class="btn btn-sm btn-outline-danger"
+                   onclick="return confirm('¿Está seguro de eliminar este producto?');">
+                <i class="bi bi-trash"></i> Eliminar
+              </a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-end mt-4 btn-volver">
+        <a th:href="@{/admin/ventas/}" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left"></i> Volver al historial
+        </a>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

@@ -96,17 +96,6 @@
                                 <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-floating mb-3">
-                                <input type="email" class="form-control" id="email"
-                                       th:field="*{email}" required maxlength="100">
-                                <label for="email">Correo electrónico</label>
-                                <div class="invalid-feedback">
-                                    Debe ingresar un email válido
-                                </div>
-                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 

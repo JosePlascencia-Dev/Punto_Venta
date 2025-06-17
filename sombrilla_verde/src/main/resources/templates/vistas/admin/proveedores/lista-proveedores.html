@@ -48,7 +48,6 @@
             <th scope="col">Empresa</th>
             <th scope="col">Contacto</th>
             <th scope="col">Teléfono</th>
-            <th scope="col">Email</th>
             <th scope="col">Estado</th>
             <th scope="col" class="text-end">Acciones</th>
           </tr>
@@ -58,7 +57,6 @@
             <td th:text="${proveedor.nombreEmpresa}"></td>
             <td th:text="${proveedor.contactoPrincipal}"></td>
             <td th:text="${proveedor.telefono}"></td>
-            <td th:text="${proveedor.email}"></td>
             <td>
                 <span th:class="${proveedor.activo} ? 'badge bg-success' : 'badge badge-inactive'">
                   <i th:class="${proveedor.activo} ? 'bi bi-check-circle' : 'bi bi-x-circle'"></i>

@@ -16,7 +16,9 @@
         <div class="card border-success">
           <div class="card-body">
             <h5 class="card-title">Ventas Hoy</h5>
-            <p class="display-6 text-success" th:if="${ventasHoy != null}"
+            <p class="display-6 text-success" th:if="${ventasHoy >= 0}"
+               th:text="${ventasHoy}">0.00</p>
+            <p class="display-6 text-danger" th:if="${ventasHoy <= 0}"
                th:text="${ventasHoy}">0.00</p>
             <p class="display-6 text-success" th:if="${ventasHoy == null}">0</p>
           </div>

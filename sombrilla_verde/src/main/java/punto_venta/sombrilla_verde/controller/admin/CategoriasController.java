@@ -2,6 +2,7 @@ package punto_venta.sombrilla_verde.controller.admin;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -36,33 +37,41 @@ public class CategoriasController {
 
     @PostMapping(value = "alta")
     public String guardarCategoria(@Valid @ModelAttribute(value = "categoria") CategoriaEntity categoria, BindingResult result, RedirectAttributes redirectAttributes , Model model) {
-        if (result.hasErrors()) {
-            for (ObjectError error : result.getAllErrors()) {
-                System.out.println("Error: " + error.getDefaultMessage());
+        try {
+            if (result.hasErrors()) {
+                for (ObjectError error : result.getAllErrors()) {
+                    System.out.println("Error: " + error.getDefaultMessage());
+                }
+                model.addAttribute("contenido","Error al guardar la categoria");
+                model.addAttribute("mensajeError", "Error al guardar la categoria");
+                return "vistas/admin/categorias/alta-categoria";
             }
-            model.addAttribute("contenido","Error al guardar la categoria");
-            model.addAttribute("mensajeError", "Error al guardar la categoria");
+            if (categoria.getId() != null) {
+                CategoriaEntity existente = categoriaService.findById(categoria.getId());
+                if (existente != null) {
+                    existente.setNombre(categoria.getNombre());
+                    existente.setDetalles(categoria.getDetalles());
+                    existente.setActivo(categoria.getActivo());
+                    categoriaService.save(existente);
+                } else {
+                    redirectAttributes.addFlashAttribute("mensajeError", "La categoría a modificar no existe");
+                    return "redirect:/admin/categorias";
+                }
+            } else {
+                categoriaService.save(categoria);
+            }
+
+            model.addAttribute("mensajeExito", "Categoría guardada con éxito");
+            List<CategoriaEntity> categorias = categoriaService.findAll();
+            model.addAttribute("categorias", categorias);
+            return "vistas/admin/categorias/lista-categorias";
+        } catch (DataIntegrityViolationException e) {
+            model.addAttribute("mensajeError", "Error: La categoria ya existe en el sistema");
+            return "vistas/admin/categorias/alta-categoria";
+        } catch (Exception e) {
+            model.addAttribute("mensajeError", "Error inesperado al guardar la categoria");
             return "vistas/admin/categorias/alta-categoria";
         }
-        if (categoria.getId() != null) {
-            CategoriaEntity existente = categoriaService.findById(categoria.getId());
-            if (existente != null) {
-                existente.setNombre(categoria.getNombre());
-                existente.setDetalles(categoria.getDetalles());
-                existente.setActivo(categoria.getActivo());
-                categoriaService.save(existente);
-            } else {
-                redirectAttributes.addFlashAttribute("mensajeError", "La categoría a modificar no existe");
-                return "redirect:/admin/categorias";
-            }
-        } else {
-            categoriaService.save(categoria);
-        }
-
-        model.addAttribute("mensajeExito", "Categoría guardada con éxito");
-        List<CategoriaEntity> categorias = categoriaService.findAll();
-        model.addAttribute("categorias", categorias);
-        return "vistas/admin/categorias/lista-categorias";
     }
 
     @GetMapping(value = "modificar/{id}")

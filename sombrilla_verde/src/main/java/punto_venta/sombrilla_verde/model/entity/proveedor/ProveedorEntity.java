@@ -29,9 +29,6 @@ public class ProveedorEntity {
     @Column(name = "telefono", unique = true)
     private String telefono;
 
-    @Column(name = "email", unique = true)
-    private String email;
-
     @Column(name = "activo", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean activo = true;
 
