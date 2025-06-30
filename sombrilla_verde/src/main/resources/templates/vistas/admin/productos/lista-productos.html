@@ -29,6 +29,49 @@
         </div>
 
         <div class="card-body">
+            <div class="filter-section">
+                <h6 class="filter-header">
+                    <i class="bi bi-funnel"></i> Filtros de Búsqueda
+                </h6>
+                <form th:action="@{/admin/productos/}" method="post" class="needs-validation" novalidate>
+                    <div class="row filter-row">
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <select class="form-select" id="categoria" name="categoriaId">
+                                    <option value="">Todas las categorías</option>
+                                    <option th:each="categoria : ${categorias}"
+                                            th:value="${categoria.id}"
+                                            th:text="${categoria.nombre}"
+                                            th:selected="${param.categoriaId != null && param.categoriaId == categoria.id.toString()}">
+                                    </option>
+                                </select>
+                                <label for="categoria">Categoría</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <select class="form-select" id="proveedor" name="proveedorId">
+                                    <option value="">Todos los proveedores</option>
+                                    <option th:each="proveedor : ${proveedores}"
+                                            th:value="${proveedor.id}"
+                                            th:text="${proveedor.nombreEmpresa}"
+                                            th:selected="${param.proveedorId != null && param.proveedorId == proveedor.id.toString()}">
+                                    </option>
+                                </select>
+                                <label for="proveedor">Proveedor</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-filter me-2">
+                                <i class="bi bi-funnel-fill"></i> Filtrar
+                            </button>
+                            <a th:href="@{/admin/productos/}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-counterclockwise"></i> Limpiar
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">

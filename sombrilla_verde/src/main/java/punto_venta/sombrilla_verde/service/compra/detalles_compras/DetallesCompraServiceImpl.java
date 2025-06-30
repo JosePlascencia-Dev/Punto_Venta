@@ -2,6 +2,7 @@ package punto_venta.sombrilla_verde.service.compra.detalles_compras;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import punto_venta.sombrilla_verde.model.entity.compra.CompraEntity;
 import punto_venta.sombrilla_verde.model.entity.compra.DetallesCompraEntity;
 import punto_venta.sombrilla_verde.repository.compra.DetallesCompraRepository;
 
@@ -30,5 +31,10 @@ public class DetallesCompraServiceImpl implements DetallesCompraService {
     @Override
     public DetallesCompraEntity findById(Integer id) {
         return detallesCompraRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<DetallesCompraEntity> findByCompra(CompraEntity compra) {
+        return detallesCompraRepository.findByCompra(compra);
     }
 }

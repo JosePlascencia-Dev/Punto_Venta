@@ -1,5 +1,6 @@
 package punto_venta.sombrilla_verde.service.compra.detalles_compras;
 
+import punto_venta.sombrilla_verde.model.entity.compra.CompraEntity;
 import punto_venta.sombrilla_verde.model.entity.compra.DetallesCompraEntity;
 
 import java.util.List;
@@ -9,4 +10,5 @@ public interface DetallesCompraService {
     List<DetallesCompraEntity> findAll();
     void deleteById(Integer id);
     DetallesCompraEntity findById(Integer id);
+    List<DetallesCompraEntity> findByCompra(CompraEntity compra);
 }

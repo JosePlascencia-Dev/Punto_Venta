@@ -27,6 +27,7 @@ public class ProductosController {
     @GetMapping(value = "/")
     public String listaProductos(Model model) {
         List<ProductoEntity> productos = productoService.findAll();
+        cargarDatos(model);
         model.addAttribute("productos", productos);
         return "vistas/admin/productos/lista-productos";
     }
@@ -108,5 +109,17 @@ public class ProductosController {
             redirectAttributes.addFlashAttribute("mensajeError", "No se encontró el producto");
         }
         return "redirect:/admin/productos/";
+    }
+
+    @PostMapping(value = "/")
+    public String filtrarProducto(@RequestParam(required = false) Integer categoriaId, @RequestParam(required = false) Integer proveedorId, Model model) {
+        cargarDatos(model);
+        model.addAttribute("productos", productoService.buscarPorCategoriaYProveedor(categoriaId, proveedorId));
+        return "vistas/admin/productos/lista-productos";
+    }
+
+    private void cargarDatos(Model model) {
+        model.addAttribute("proveedores", proveedorService.findAll());
+        model.addAttribute("categorias", categoriaService.findAll());
     }
 }

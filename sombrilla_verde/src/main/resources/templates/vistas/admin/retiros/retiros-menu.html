@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantillas/plantilla_principal}">
+<head>
+  <title>Retiros</title>
+</head>
+<body>
+<main class="flex-grow-1 p-5" layout:fragment="content">
+  <div class="text-center">
+    <h2 class="mb-4">Retiros familiares</h2>
+    <div class="d-grid gap-3 col-6 mx-auto">
+      <a class="btn btn-primary btn-lg" th:href="@{/admin/retiros/efectivo}">
+        <i class="bi bi-clock-history me-2"></i> Retiros de efectivo
+      </a>
+      <a class="btn btn-success btn-lg" th:href="@{/admin/retiros/productos}">
+        <i class="bi bi-box-seam me-2"></i> Retiros de productos
+      </a>
+    </div>
+  </div>
+</main>
+</body>
+</html>

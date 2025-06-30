@@ -36,7 +36,6 @@ public class VentasController {
         List<DetalleVentaEntity> ventas = detalleVentaService.findByVenta(this.ventaEntity);
         model.addAttribute("venta", ventaEntity);
         model.addAttribute("detalles", ventas);
-        model.addAttribute("ventas", ventas);
         return "vistas/admin/ventas/detalles-venta";
     }
 }

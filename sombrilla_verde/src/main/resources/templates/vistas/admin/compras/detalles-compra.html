@@ -69,20 +69,20 @@
   <div class="card detalle-card shadow-sm">
     <div class="card-header bg-custom-green text-white d-flex justify-content-between align-items-center">
       <h5 class="mb-0">
-        <i class="bi bi-file-text-fill me-2"></i> Detalle de Venta (ID: <span th:text="${venta.id}"></span>)
+        <i class="bi bi-file-text-fill me-2"></i> Detalle de Compra (ID: <span th:text="${compra.id}"></span>)
       </h5>
     </div>
 
     <div class="card-body">
       <div class="row mb-6">
         <div class="col-md-6">
-          <p><strong>Fecha:</strong> <span th:text="${#temporals.format(venta.fechaVenta, 'dd/MM/yyyy HH:mm')}"></span></p>
+          <p><strong>Fecha:</strong> <span th:text="${#temporals.format(compra.fechaCompra, 'dd/MM/yyyy HH:mm')}"></span></p>
         </div>
         <div class="col-md-6">
-          <p><strong>Vendedor:</strong> <span th:text="${venta.vendedor.nombreUsuario}"></span></p>
+          <p><strong>Proveedor:</strong> <span th:text="${compra.proveedor.nombreEmpresa}"></span></p>
         </div>
         <div class="col-md-6">
-          <p><strong>Total Venta:</strong> <span class="fw-bold text-success" th:text="${'$' + #numbers.formatDecimal(venta.total, 1, 'COMMA', 2, 'POINT')}"></span></p>
+          <p><strong>Total Compra:</strong> <span class="fw-bold text-success" th:text="${'$' + #numbers.formatDecimal(compra.total, 1, 'COMMA', 2, 'POINT')}"></span></p>
         </div>
       </div>
 
@@ -103,7 +103,7 @@
           <tr th:each="detalle : ${detalles}" class="align-middle">
             <td th:text="${detalle.producto.nombre}"></td>
             <td class="text-end" th:text="${#numbers.formatDecimal(detalle.cantidad, 1, 'COMMA', 3, 'POINT')}"></td>
-            <td class="text-end" th:text="${'$' + #numbers.formatDecimal(detalle.precioUnitario, 1, 'COMMA', 2, 'POINT')}"></td>
+            <td class="text-end" th:text="${'$' + #numbers.formatDecimal(detalle.costoUnitario, 1, 'COMMA', 2, 'POINT')}"></td>
             <td class="text-end" th:text="${'$' + #numbers.formatDecimal(detalle.totalLinea, 1, 'COMMA', 2, 'POINT')}"></td>
             <!--  <td>
               <a th:href="@{/admin/ventas/{id}/eliminar/{idP}(id=${detalle.producto.id})}"

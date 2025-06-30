@@ -1,2 +1,7 @@
 # Punto_Venta
-Sistema de punto de venta para la tienda de abarrotes "La Sombrilla Verde"
+Sistema de ventas para negocios familiares en java con Spring framework
+arquitectura monilitica
+mariaDB 
+
+como correrlo:
+
