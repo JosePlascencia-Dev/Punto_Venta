@@ -83,6 +83,12 @@
                 </a>
             </li>
 
+            <li class="nav-item" sec:authorize="hasAnyAuthority('VENDEDOR')">
+                <a class="nav-link" th:href="@{/cajere/inventario/}">
+                    <i class="bi bi-clipboard me-2"></i> Inventario
+                </a>
+            </li>
+
         </ul>
     </div>
 </aside>
