@@ -7,6 +7,8 @@ import punto_venta.sombrilla_verde.model.entity.familia.DetalleRetiroFamiliarEnt
 import punto_venta.sombrilla_verde.model.entity.familia.RetiroEfectivoEntity;
 import punto_venta.sombrilla_verde.repository.familia.RetiroEfectivoRepository;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -32,5 +34,15 @@ public class RetiroEfectivoServiceImpl implements RetiroEfectivoService {
     @Override
     public RetiroEfectivoEntity findById(Integer id) {
         return retiroEfectivoRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<RetiroEfectivoEntity> findAllDesdeFecha(LocalDateTime fechaInicio) {
+        return retiroEfectivoRepository.findAllDesdeFecha(fechaInicio);
+    }
+
+    @Override
+    public BigDecimal sumMontoTotalDesdeFecha(LocalDateTime fechaInicio) {
+        return retiroEfectivoRepository.sumMontoTotalDesdeFecha(fechaInicio);
     }
 }

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantillas/plantilla_principal}">
+<head>
+    <title>Lista de Ventas</title>
+    <style>
+        .venta-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--custom-green);
+            margin-bottom: 1rem;
+        }
+
+        .venta-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        .venta-header {
+            background-color: var(--custom-green);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.25rem 0.25rem 0 0 !important;
+        }
+
+        .table-ventas th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            border-top: none;
+        }
+
+        .acciones-cell {
+            white-space: nowrap;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--custom-green);
+            border-color: var(--custom-green);
+        }
+
+        .pagination .page-link {
+            color: var(--custom-green);
+        }
+    </style>
+</head>
+<body>
+<main class="flex-grow-1 p-4" layout:fragment="content">
+    <!-- Alertas -->
+    <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show mb-4">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${mensajeExito} ?: 'Éxito'">Éxito</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show mb-4">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${mensajeError} ?: 'Error'">Error</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <!-- Tarjeta de Resumen -->
+    <div class="card shadow-sm mb-4 border-success">
+        <div class="card-body py-3">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="card border-0 h-100 bg-light-success">
+                        <div class="card-body text-center">
+                            <h6 class="card-title text-muted mb-2">Total Retirado</h6>
+                            <h2 class="display-5 text-success"
+                                th:text="${totalRetirado != null} ? ${#numbers.formatDecimal(totalRetirado, 1, 2)} : '$0.00'">
+                                $0.00
+                            </h2>
+                            <small class="text-muted" th:if="${fechaSeleccionada != null}">
+                                Desde: <span th:text="${#temporals.format(fechaSeleccionada, 'dd/MM/yyyy')}"></span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="card border-0 h-100 bg-light-primary">
+                        <div class="card-body text-center">
+                            <h6 class="card-title text-muted mb-2">Cantidad de Retiros</h6>
+                            <h2 class="display-5 text-primary"
+                                th:text="${cantidadRetiros != null} ? ${cantidadRetiros} : '0'">
+                                0
+                            </h2>
+                            <small class="text-muted" th:if="${fechaSeleccionada != null}">
+                                Desde: <span th:text="${#temporals.format(fechaSeleccionada, 'dd/MM/yyyy')}"></span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Tarjeta Principal -->
+    <div class="card shadow-sm venta-card">
+        <div class="card-header venta-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 d-flex align-items-center">
+                <i class="bi bi-receipt me-2"></i>Historial de Retiro de Productos
+            </h5>
+            <form th:action="@{/admin/retiros/productos/filtrar}" method="Post" class="d-flex align-items-center gap-2">
+                <div class="form-group mb-0">
+                    <label for="fechaInicio" class="form-label mb-0 me-2">Filtrar desde:</label>
+                    <input type="date"
+                           class="form-control form-control-sm"
+                           id="fechaInicio"
+                           name="fechaInicio"
+                           th:value="${fechaSeleccionada != null} ? ${#temporals.format(fechaSeleccionada, 'yyyy-MM-dd')} : ''">
+                </div>
+                <button type="submit" class="btn btn-success btn-sm">
+                    <i class="bi bi-funnel"></i> Filtrar
+                </button>
+            </form>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-ventas table-hover align-middle">
+                    <thead>
+                    <tr>
+                        <th scope="col" style="width: 15%;">Fecha</th>
+                        <th scope="col" style="width: 10%;">Total</th>
+                        <th scope="col" style="width: 20%;" class="text-end acciones-cell">detalle</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="retiro : ${retiros}" class="align-middle">
+                            <td>
+                                <span class="d-block" th:text="${#temporals.format(retiro.fecha, 'dd/MM/yyyy')}"></span>
+                                <small class="text-muted" th:text="${#temporals.format(retiro.fecha, 'HH:mm')}"></small>
+                            </td>
+                            <td>
+                                <span class="fw-bold" th:text="${'$' + #numbers.formatDecimal(retiro.totalCosto, 1, 'COMMA', 2, 'POINT')}"></span>
+                            </td>
+                            <td class="text-end acciones-cell">
+                                <div class="btn-group" role="group">
+                                    <a th:href="@{/admin/retiros/productos/{id}(id=${retiro.id})}"
+                                       class="btn btn-sm btn-outline-custom-green"
+                                       title="Ver Detalles"
+                                       data-bs-toggle="tooltip">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

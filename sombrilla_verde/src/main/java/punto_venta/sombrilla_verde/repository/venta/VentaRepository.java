@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import punto_venta.sombrilla_verde.model.entity.venta.VentaEntity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public interface VentaRepository extends JpaRepository<VentaEntity, Integer> {
     @Query("SELECT COUNT(v) FROM ventas v WHERE DATE(v.fechaVenta) = CURRENT_DATE")
@@ -26,28 +27,24 @@ public interface VentaRepository extends JpaRepository<VentaEntity, Integer> {
     BigDecimal calcularGananciaDelDia();
 
     @Query("""
-      SELECT COALESCE(SUM(d.totalLinea), 0) 
-      FROM detalle_venta d 
-      WHERE d.producto.proveedor.id = :provId
-        AND d.venta.fechaVenta > (
-          SELECT COALESCE(MAX(c.fechaCompra), '1970-01-01T00:00:00')
-          FROM compras_proveedor c
-          WHERE c.proveedor.id = :provId
-        )
-      """)
-    BigDecimal totalVentasDesdeUltimaCompra(@Param("provId") Integer proveedorId);
+    SELECT COALESCE(SUM(d.totalLinea), 0) 
+    FROM detalle_venta d 
+    WHERE d.producto.proveedor.id = :provId
+      AND d.venta.fechaVenta >= :fechaInicio
+    """)
+    BigDecimal totalVentasDesdeFecha(
+            @Param("provId") Integer proveedorId,
+            @Param("fechaInicio") LocalDateTime fechaInicio);
 
     @Query("""
-      SELECT COALESCE(SUM(d.cantidad * p.precioCompra), 0)
-      FROM detalle_venta d
-      JOIN d.producto p
-      WHERE p.proveedor.id = :provId
-        AND d.venta.fechaVenta > (
-          SELECT COALESCE(MAX(c.fechaCompra), '1970-01-01T00:00:00')
-          FROM compras_proveedor c
-          WHERE c.proveedor.id = :provId
-        )
-      """)
-    BigDecimal costoVentasDesdeUltimaCompra(@Param("provId") Integer proveedorId);
+    SELECT COALESCE(SUM(d.cantidad * p.precioCompra), 0)
+    FROM detalle_venta d
+    JOIN d.producto p
+    WHERE p.proveedor.id = :provId
+      AND d.venta.fechaVenta >= :fechaInicio
+    """)
+    BigDecimal costoVentasDesdeFecha(
+            @Param("provId") Integer proveedorId,
+            @Param("fechaInicio") LocalDateTime fechaInicio);
 
 }

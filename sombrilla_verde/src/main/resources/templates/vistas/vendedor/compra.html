@@ -179,23 +179,55 @@
                         <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Presupuesto</h5>
                     </div>
                     <div class="card-body">
+                        <!-- Selector de fecha -->
+                        <form th:action="@{/cajere/compra/filtrar-ventas}" method="get" class="mb-4">
+                            <div class="row align-items-end">
+                                <div class="col-md-6">
+                                    <label for="fechaInicio" class="form-label">Filtrar ventas desde:</label>
+                                    <input type="date"
+                                           class="form-control"
+                                           id="fechaInicio"
+                                           name="fechaInicio"
+                                           th:value="${fechaSeleccionada != null} ? ${#temporals.format(fechaSeleccionada, 'yyyy-MM-dd')} : ''">
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-funnel"></i> Filtrar
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <div class="card border-success h-100">
                                     <div class="card-body py-2 d-flex flex-column">
                                         <h6 class="card-title text-muted mb-2">Ventas Totales</h6>
-                                        <h2 class="display-3 text-success mtext-dangerb-auto" th:if="${ventaTotal == null}">$0.00</h2>
-                                        <h2 class="display-3 text-success mb-auto" th:if="${ventaTotal != null}" th:text="'$' + ${#numbers.formatDecimal(ventaTotal, 1, 2)}" id="ventaTotal">$0.00</h2>
-
+                                        <h2 class="display-3 text-success mb-auto"
+                                            th:if="${ventaTotal == null}">$0.00</h2>
+                                        <h2 class="display-3 text-success mb-auto"
+                                            th:if="${ventaTotal != null}"
+                                            th:text="'$' + ${#numbers.formatDecimal(ventaTotal, 1, 2)}"
+                                            id="ventaTotal">$0.00</h2>
+                                        <small class="text-muted" th:if="${fechaSeleccionada != null}">
+                                            Desde: <span th:text="${#temporals.format(fechaSeleccionada, 'dd/MM/yyyy')}"></span>
+                                        </small>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <div class="card border-success h-100">
                                     <div class="card-body py-2 d-flex flex-column">
-                                        <h6 class="card-title text-muted mb-2">Ventas sin Ganacias</h6>
-                                        <h2 class="display-3 text-success mtext-dangerb-auto" th:if="${costoTotal == null}">$0.00</h2>
-                                        <h2 class="display-3 text-success mb-auto" th:if="${costoTotal != null}" th:text="'$' + ${#numbers.formatDecimal(costoTotal, 1, 2)}" id="costoTotal">$0.00</h2>
+                                        <h6 class="card-title text-muted mb-2">Ventas sin Ganancias</h6>
+                                        <h2 class="display-3 text-success mb-auto"
+                                            th:if="${costoTotal == null}">$0.00</h2>
+                                        <h2 class="display-3 text-success mb-auto"
+                                            th:if="${costoTotal != null}"
+                                            th:text="'$' + ${#numbers.formatDecimal(costoTotal, 1, 2)}"
+                                            id="costoTotal">$0.00</h2>
+                                        <small class="text-muted" th:if="${fechaSeleccionada != null}">
+                                            Desde: <span th:text="${#temporals.format(fechaSeleccionada, 'dd/MM/yyyy')}"></span>
+                                        </small>
                                     </div>
                                 </div>
                             </div>

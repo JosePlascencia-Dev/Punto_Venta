@@ -6,6 +6,7 @@ import punto_venta.sombrilla_verde.model.entity.venta.VentaEntity;
 import punto_venta.sombrilla_verde.repository.venta.VentaRepository;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -49,12 +50,13 @@ public class VentaServiceImpl implements VentaService {
     }
 
     @Override
-    public BigDecimal totalVentasDesdeUltimaCompra(Integer proveedorId) {
-        return ventaRepository.totalVentasDesdeUltimaCompra(proveedorId);
+    public BigDecimal totalVentasDesdeFecha(Integer proveedorId, LocalDateTime fechaInicio) {
+        return ventaRepository.totalVentasDesdeFecha(proveedorId, fechaInicio);
     }
 
     @Override
-    public BigDecimal costoVentasDesdeUltimaCompra(Integer proveedorId) {
-        return ventaRepository.costoVentasDesdeUltimaCompra(proveedorId);
+    public BigDecimal costoVentasDesdeFecha(Integer proveedorId, LocalDateTime fechaInicio) {
+        return ventaRepository.costoVentasDesdeFecha(proveedorId, fechaInicio);
     }
+
 }

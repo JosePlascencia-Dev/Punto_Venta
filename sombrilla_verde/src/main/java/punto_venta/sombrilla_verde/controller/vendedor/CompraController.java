@@ -2,6 +2,7 @@ package punto_venta.sombrilla_verde.controller.vendedor;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -24,8 +25,8 @@ import punto_venta.sombrilla_verde.service.usuario.UsuarioService;
 import punto_venta.sombrilla_verde.service.venta.venta.VentaService;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Controller
 @RequestMapping(value = "cajere/compra")
@@ -47,6 +48,7 @@ public class CompraController {
 
     ProveedorEntity proveedor = null;
     ProductosSeleccionados carrito = new ProductosSeleccionados();
+    LocalDateTime fechaSeleccionada = null;
 
     @GetMapping(value = "/")
     public String vistaVenta(Model model) {
@@ -98,6 +100,27 @@ public class CompraController {
         return "vistas/vendedor/compra";
     }
 
+    @GetMapping("filtrar-ventas")
+    public String filtrarVentas(Model model,
+            @RequestParam("fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio
+            ,RedirectAttributes redirectAttributes,
+            HttpSession session) {
+
+        if (this.proveedor == null) {
+            redirectAttributes.addFlashAttribute("mensajeError", "No ha seleccionado el proveedor");
+            return "redirect:/cajere/compra/";
+        }
+
+        // Convertir LocalDate a LocalDateTime (inicio del día)
+        this.fechaSeleccionada = fechaInicio.atStartOfDay();
+
+        // Guardar en sesión
+        cargarDatosProductos(model);
+        model.addAttribute("compra", this.carrito);
+        model.addAttribute("fechaSeleccionada", this.fechaSeleccionada);
+        return "vistas/vendedor/compra";
+    }
+
     @Transactional
     @PostMapping("procesar-compra")
     public String procesarVenta(
@@ -144,8 +167,8 @@ public class CompraController {
         if (!model.containsAttribute("productos") && this.proveedor != null) {
             model.addAttribute("productos", productoService.findByProveedor(this.proveedor));
             model.addAttribute("proveedorSeleccionado", proveedor);
-            model.addAttribute("ventaTotal", ventaService.totalVentasDesdeUltimaCompra(this.proveedor.getId()));
-            model.addAttribute("costoTotal", ventaService.costoVentasDesdeUltimaCompra(this.proveedor.getId()));
+            model.addAttribute("ventaTotal", ventaService.totalVentasDesdeFecha(this.proveedor.getId(), this.fechaSeleccionada));
+            model.addAttribute("costoTotal", ventaService.costoVentasDesdeFecha(this.proveedor.getId(), this.fechaSeleccionada));
         }
     }
 
